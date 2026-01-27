@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-gradient-to-b from-slate-900/40 to-slate-900/20 backdrop-blur-xl border-r border-white/10 shadow-2xl;
+  }
+  
+  .glass-card {
+    @apply bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 shadow-lg transition-all duration-300 hover:shadow-teal-500/10;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 15px rgba(45, 212, 191, 0.3);
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #e0f2fe;
+}
+
+/* Dynamic Fluid Background */
+.fluid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background: linear-gradient(135deg, #0f172a 0%, #064e3b 50%, #0f172a 100%);
+  overflow: hidden;
+}
+
+.mountain {
+  position: absolute;
+  bottom: -10%;
+  left: 0;
+  width: 200%;
+  height: 50%;
+  background: linear-gradient(to top, rgba(6, 95, 70, 0.8), transparent);
+  filter: blur(40px);
+  animation: wave 15s ease-in-out infinite alternate;
+  opacity: 0.6;
+  border-radius: 100% 100% 0 0;
+}
+
+.mountain:nth-child(1) {
+  bottom: -20%;
+  left: -50%;
+  background: linear-gradient(to top, rgba(16, 185, 129, 0.4), transparent);
+  animation-duration: 25s;
+}
+
+.mountain:nth-child(2) {
+  bottom: -30%;
+  left: -20%;
+  background: linear-gradient(to top, rgba(5, 150, 105, 0.5), transparent);
+  animation-duration: 20s;
+  animation-delay: -5s;
+}
+
+.mountain:nth-child(3) {
+  bottom: -10%;
+  right: -50%;
+  background: linear-gradient(to top, rgba(4, 120, 87, 0.6), transparent);
+  animation-duration: 30s;
+  animation-delay: -10s;
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(-10%) scaleY(1.2);
+  }
+  100% {
+    transform: translateX(0) scaleY(1);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
