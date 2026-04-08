@@ -30,11 +30,11 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
   return (
     <aside className="w-64 h-full glass-panel flex flex-col p-4 rounded-r-2xl border-l-0 z-20">
       <div className="flex items-center gap-3 px-4 py-6 mb-4">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-teal-500/30">
           <div className="w-3 h-3 bg-white rounded-full" />
         </div>
-        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-300 text-glow">
-          Liquid OS
+        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-200 to-white">
+          Explore OS
         </span>
       </div>
 
@@ -70,8 +70,8 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
         })}
       </nav>
 
-      <div className="mt-auto px-4 pb-6 opacity-40 text-xs text-center font-mono tracking-widest text-blue-200/50">
-        LIQUID OS v2.1
+      <div className="mt-auto px-4 pb-6 opacity-40 text-xs text-center font-mono tracking-widest text-teal-200/50">
+        EXPLORE OS v2.1
       </div>
     </aside>
   );
