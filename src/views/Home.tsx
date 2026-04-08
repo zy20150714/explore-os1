@@ -13,10 +13,18 @@ interface HomeProps {
 
 export function Home({ onNavigate }: HomeProps) {
   const { stats } = useData();
+  // 优化：只在分钟变化时更新时间，减少重渲染
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000); 
+    // 初始更新
+    const updateTime = () => setNow(new Date());
+    
+    // 立即更新一次
+    updateTime();
+    
+    // 每分钟更新一次，而不是每秒
+    const timer = setInterval(updateTime, 60000); 
     return () => clearInterval(timer);
   }, []);
 

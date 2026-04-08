@@ -14,15 +14,14 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(onComplete, 1500); // Wait longer after 100%
+          setTimeout(onComplete, 500); // Reduce wait time after 100%
           return 100;
         }
-        // Non-linear progress or just very slow
-        // Random increment between 0.2 and 0.8
-        const increment = Math.random() * 0.6 + 0.2;
+        // Faster progress increment
+        const increment = Math.random() * 1.5 + 0.5;
         return Math.min(prev + increment, 100);
       });
-    }, 50); // Slower interval
+    }, 20); // Faster interval
 
     return () => clearInterval(timer);
   }, [onComplete]);

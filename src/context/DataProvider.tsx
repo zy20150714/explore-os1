@@ -41,6 +41,8 @@ export interface Habit {
   completed: boolean;
 }
 
+export type ThemeMode = 'glass' | 'normal';
+
 interface DataContextType {
   // Todos
   todos: TodoItem[];
@@ -75,6 +77,10 @@ interface DataContextType {
     totalEvents: number;
     habitStreak: number;
   };
+  
+  // Theme
+  themeMode: ThemeMode;
+  toggleThemeMode: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -115,6 +121,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return savedCheckins || [false, false, false, false, false, false, false];
   });
 
+  // Theme state
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const savedTheme = loadObjectFromCookie('explore_os_theme');
+    return savedTheme || 'glass';
+  });
+
   // Save data to cookie when it changes
   useEffect(() => {
     saveObjectToCookie('explore_os_todos', todos);
@@ -139,6 +151,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     saveObjectToCookie('explore_os_checkins', weeklyCheckins);
   }, [weeklyCheckins]);
+
+  // Save theme to cookie
+  useEffect(() => {
+    saveObjectToCookie('explore_os_theme', themeMode);
+  }, [themeMode]);
 
   // --- Actions ---
   const addTodo = (text: string, urgent: boolean, dueDate?: string) => {
@@ -213,6 +230,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setWeeklyCheckins(newCheckins);
   };
 
+  // Theme toggle
+  const toggleThemeMode = () => {
+    setThemeMode(prev => prev === 'glass' ? 'normal' : 'glass');
+  };
+
   // --- Derived Calculations ---
 
   // Project Events (Deadlines & Start Dates)
@@ -273,7 +295,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       habits, toggleHabit, addHabit,
       timeline, addTimelineEntry,
       weeklyCheckins, toggleWeeklyCheckin,
-      stats
+      stats,
+      themeMode, toggleThemeMode
     }}>
       {children}
     </DataContext.Provider>
