@@ -54,3 +54,9 @@ yarn-error.log*
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
