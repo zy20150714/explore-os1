@@ -48,6 +48,7 @@ interface DataContextType {
   todos: TodoItem[];
   addTodo: (text: string, urgent: boolean, dueDate?: string) => void;
   toggleTodo: (id: number) => void;
+  deleteTodo: (id: number) => void;
   
   // Projects
   projects: Project[];
@@ -164,6 +165,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const toggleTodo = (id: number) => {
     setTodos(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  };
+
+  const deleteTodo = (id: number) => {
+    setTodos(prev => prev.filter(t => t.id !== id));
   };
 
   const addProject = (project: Omit<Project, 'id' | 'progress' | 'checkIns'>) => {
@@ -289,7 +294,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   return (
     <DataContext.Provider value={{
-      todos, addTodo, toggleTodo,
+      todos, addTodo, toggleTodo, deleteTodo,
       projects, addProject, checkInProject,
       events: manualEvents, allEvents, addEvent,
       habits, toggleHabit, addHabit,

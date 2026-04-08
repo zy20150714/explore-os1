@@ -38,7 +38,7 @@ export function App() {
                 </div>
                 <div>
                     <h2 className="text-2xl font-bold text-white mb-2">应用中心</h2>
-                    <p className="text-slate-400 max-w-md">通过插件和集成扩展您的工作区。v2.0 版本敬请期待。</p>
+                    <p className="text-slate-400 max-w-md">通过插件和集成扩展您的工作区。v3.0 版本已上线。</p>
                 </div>
                 <button className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors border border-white/10">
                     浏览目录

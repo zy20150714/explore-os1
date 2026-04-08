@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { GlassCard } from '@/components/GlassCard';
-import { Plus, Check, AlertCircle, Calendar } from 'lucide-react';
+import { Plus, Check, AlertCircle, Calendar, Trash2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useData } from '@/context/DataProvider';
 
 export function Todo() {
-  const { todos, addTodo, toggleTodo } = useData();
+  const { todos, addTodo, toggleTodo, deleteTodo } = useData();
   const [inputValue, setInputValue] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
@@ -96,13 +96,15 @@ export function Todo() {
                     <GlassCard 
                         key={todo.id} 
                         className={cn(
-                        "flex items-center gap-4 p-4 cursor-pointer group transition-all duration-300 border-l-4",
+                        "flex items-center gap-4 p-4 transition-all duration-300 border-l-4",
                         todo.urgent ? "border-l-red-500" : "border-l-teal-500"
                         )}
-                        onClick={() => toggleTodo(todo.id)}
                     >
-                        <div className="w-6 h-6 rounded-full border-2 border-slate-500 group-hover:border-teal-400 flex items-center justify-center transition-all shrink-0" />
-                        <div className="flex-1 flex flex-col">
+                        <div 
+                            className="w-6 h-6 rounded-full border-2 border-slate-500 hover:border-teal-400 flex items-center justify-center transition-all shrink-0 cursor-pointer"
+                            onClick={() => toggleTodo(todo.id)}
+                        />
+                        <div className="flex-1 flex flex-col cursor-pointer" onClick={() => toggleTodo(todo.id)}>
                             <span className="text-lg text-slate-100">{todo.text}</span>
                             {todo.dueDate && (
                                 <span className="text-xs text-slate-400 flex items-center gap-1 mt-1">
@@ -115,6 +117,16 @@ export function Todo() {
                                 <AlertCircle size={12} /> 紧急
                             </span>
                         )}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                deleteTodo(todo.id);
+                            }}
+                            className="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
+                            title="删除待办事项"
+                        >
+                            <Trash2 size={18} />
+                        </button>
                     </GlassCard>
                 ))}
                 {todos.filter(t => !t.completed).length === 0 && (
@@ -130,13 +142,30 @@ export function Todo() {
                 {todos.filter(t => t.completed).map((todo) => (
                     <GlassCard 
                         key={todo.id} 
-                        className="flex items-center gap-4 p-4 cursor-pointer bg-white/5 border-l-4 border-l-slate-500"
-                        onClick={() => toggleTodo(todo.id)}
+                        className="flex items-center gap-4 p-4 bg-white/5 border-l-4 border-l-slate-500"
                     >
-                        <div className="w-6 h-6 rounded-full border-2 bg-teal-500/20 border-teal-500 text-teal-500 flex items-center justify-center shrink-0">
+                        <div 
+                            className="w-6 h-6 rounded-full border-2 bg-teal-500/20 border-teal-500 text-teal-500 flex items-center justify-center shrink-0 cursor-pointer"
+                            onClick={() => toggleTodo(todo.id)}
+                        >
                              <Check size={14} strokeWidth={3} />
                         </div>
-                        <span className="flex-1 text-lg line-through text-slate-500">{todo.text}</span>
+                        <span 
+                            className="flex-1 text-lg line-through text-slate-500 cursor-pointer"
+                            onClick={() => toggleTodo(todo.id)}
+                        >
+                            {todo.text}
+                        </span>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                deleteTodo(todo.id);
+                            }}
+                            className="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
+                            title="删除待办事项"
+                        >
+                            <Trash2 size={18} />
+                        </button>
                     </GlassCard>
                 ))}
                 {todos.filter(t => t.completed).length === 0 && (
