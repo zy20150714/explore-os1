@@ -2,35 +2,64 @@
 
 @layer utilities {
   .glass-panel {
-    @apply bg-gradient-to-b from-slate-900/60 to-slate-900/30 backdrop-blur-2xl border border-white/15 shadow-2xl shadow-blue-500/5 transition-all duration-500;
+    @apply bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/10 shadow-xl shadow-black/10 transition-all duration-300;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
   }
   
   .glass-card {
-    @apply bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg border border-white/15 shadow-xl shadow-blue-500/10 transition-all duration-500 hover:shadow-blue-500/20 hover:scale-105 hover:border-white/20;
+    @apply bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-lg shadow-black/10 transition-all duration-300 hover:shadow-lg hover:shadow-black/20 hover:scale-102 hover:border-white/15;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .glass-button {
-    @apply bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-blue-500/5 hover:shadow-blue-500/20 hover:bg-white/25 transition-all duration-300;
+    @apply bg-gradient-to-r from-white/15 to-white/8 border border-white/15 shadow-md shadow-black/10 hover:shadow-md hover:shadow-black/20 hover:bg-white/20 transition-all duration-200;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .glass-input {
-    @apply bg-white/10 backdrop-blur-md border border-white/15 shadow-inner shadow-blue-500/5 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all duration-300;
+    @apply bg-white/8 border border-white/10 shadow-inner shadow-black/5 focus:border-blue-300 focus:ring-2 focus:ring-blue-300/20 transition-all duration-200;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .text-glow {
-    text-shadow: 0 0 20px rgba(105, 177, 255, 0.5);
+    text-shadow: 0 0 10px rgba(105, 177, 255, 0.3);
   }
 
   .text-glow-blue {
-    text-shadow: 0 0 15px rgba(105, 177, 255, 0.7), 0 0 30px rgba(105, 177, 255, 0.3);
+    text-shadow: 0 0 8px rgba(105, 177, 255, 0.5), 0 0 16px rgba(105, 177, 255, 0.2);
   }
 
   .text-glow-purple {
-    text-shadow: 0 0 15px rgba(139, 92, 246, 0.7), 0 0 30px rgba(139, 92, 246, 0.3);
+    text-shadow: 0 0 8px rgba(139, 92, 246, 0.5), 0 0 16px rgba(139, 92, 246, 0.2);
   }
 
   .bg-glass {
-    @apply bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10;
+    @apply bg-gradient-to-br from-white/8 to-white/4 border border-white/8;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  /* Fallback for browsers that don't support backdrop-filter */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.8);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .glass-button {
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .glass-input {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .bg-glass {
+      background: rgba(255, 255, 255, 0.06);
+    }
   }
 }
 
@@ -39,7 +68,37 @@ body {
   padding: 0;
   overflow: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: #e0f2fe;
+  color: #f0f9ff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .glass-panel {
+    width: 100%;
+    border-radius: 0;
+  }
+  
+  .glass-card {
+    margin: 0.5rem;
+  }
+  
+  main {
+    padding: 1rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .glass-card {
+    hover: none;
+    transition: none;
+  }
+  
+  .glass-button {
+    padding: 0.75rem 1.5rem;
+  }
 }
 
 /* Dynamic Fluid Background */
@@ -50,7 +109,7 @@ body {
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background: linear-gradient(135deg, #0f172a 0%, #165DFF 50%, #0f172a 100%);
+  background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 50%, #0a1128 100%);
   overflow: hidden;
 }
 
@@ -60,33 +119,33 @@ body {
   left: 0;
   width: 200%;
   height: 50%;
-  background: linear-gradient(to top, rgba(105, 177, 255, 0.3), transparent);
-  filter: blur(50px);
-  animation: wave 15s ease-in-out infinite alternate;
-  opacity: 0.7;
+  background: linear-gradient(to top, rgba(105, 177, 255, 0.2), transparent);
+  filter: blur(60px);
+  animation: wave 18s ease-in-out infinite alternate;
+  opacity: 0.6;
   border-radius: 100% 100% 0 0;
 }
 
 .mountain:nth-child(1) {
   bottom: -20%;
   left: -50%;
-  background: linear-gradient(to top, rgba(139, 92, 246, 0.2), transparent);
-  animation-duration: 25s;
+  background: linear-gradient(to top, rgba(139, 92, 246, 0.15), transparent);
+  animation-duration: 28s;
 }
 
 .mountain:nth-child(2) {
   bottom: -30%;
   left: -20%;
-  background: linear-gradient(to top, rgba(236, 72, 153, 0.2), transparent);
-  animation-duration: 20s;
+  background: linear-gradient(to top, rgba(236, 72, 153, 0.15), transparent);
+  animation-duration: 22s;
   animation-delay: -5s;
 }
 
 .mountain:nth-child(3) {
   bottom: -10%;
   right: -50%;
-  background: linear-gradient(to top, rgba(105, 177, 255, 0.4), transparent);
-  animation-duration: 30s;
+  background: linear-gradient(to top, rgba(105, 177, 255, 0.25), transparent);
+  animation-duration: 32s;
   animation-delay: -10s;
 }
 
@@ -95,7 +154,7 @@ body {
     transform: translateX(0) scaleY(1);
   }
   50% {
-    transform: translateX(-10%) scaleY(1.2);
+    transform: translateX(-8%) scaleY(1.1);
   }
   100% {
     transform: translateX(0) scaleY(1);
@@ -106,27 +165,27 @@ body {
 .particle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(105, 177, 255, 0.3);
-  animation: float 20s infinite ease-in-out;
-  filter: blur(10px);
+  background: rgba(105, 177, 255, 0.2);
+  animation: float 25s infinite ease-in-out;
+  filter: blur(12px);
 }
 
 @keyframes float {
   0%, 100% {
     transform: translateY(0) translateX(0);
-    opacity: 0.3;
+    opacity: 0.2;
   }
   25% {
-    transform: translateY(-50px) translateX(20px);
-    opacity: 0.6;
+    transform: translateY(-40px) translateX(15px);
+    opacity: 0.4;
   }
   50% {
-    transform: translateY(-100px) translateX(0);
-    opacity: 0.3;
+    transform: translateY(-80px) translateX(0);
+    opacity: 0.2;
   }
   75% {
-    transform: translateY(-50px) translateX(-20px);
-    opacity: 0.6;
+    transform: translateY(-40px) translateX(-15px);
+    opacity: 0.4;
   }
 }
 
