@@ -39,32 +39,11 @@ export function Home({ onNavigate }: HomeProps) {
     { label: '应用中心', icon: Grid, view: 'apps' as ViewType, color: 'from-indigo-400 to-blue-500' },
   ];
 
-  // Get current time to determine if there's an ongoing focus session
+  // Get current focus session from user data
   const getCurrentFocus = () => {
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentTime = currentHour * 60 + currentMinute;
-    
-    // Check if current time is between 14:00 and 15:30
-    const meetingStart = 14 * 60 + 0;
-    const meetingEnd = 15 * 60 + 30;
-    
-    if (currentTime >= meetingStart && currentTime < meetingEnd) {
-      return {
-        title: '产品设计评审',
-        time: '14:00 - 15:30',
-        location: '会议室 A',
-        status: '进行中'
-      };
-    }
-    
-    // Return default focus if no meeting is ongoing
-    return {
-      title: '准备开始工作',
-      time: '随时',
-      location: '我的工作台',
-      status: '待开始'
-    };
+    // For now, return null to indicate no focus session
+    // Later, this can be updated to get actual focus sessions from user data
+    return null;
   };
 
   const currentFocus = getCurrentFocus();
@@ -93,38 +72,40 @@ export function Home({ onNavigate }: HomeProps) {
 
       {/* Main Content */}
       <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
-        {/* Main Focus */}
-        <GlassCard className={`p-6 relative overflow-hidden ${isMobile ? '' : 'lg:col-span-2'}`}>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full blur-[80px] -mr-16 -mt-16 pointer-events-none" />
-          
-          <div className="relative z-10">
-            <h3 className="text-sm uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
-              <Clock size={16} className="text-teal-400" />
-              当前专注
-            </h3>
+        {/* Main Focus - Only show if there's a focus session */}
+        {currentFocus && (
+          <GlassCard className={`p-6 relative overflow-hidden ${isMobile ? '' : 'lg:col-span-2'}`}>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full blur-[80px] -mr-16 -mt-16 pointer-events-none" />
             
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:bg-slate-800/80 transition-all duration-300 cursor-pointer group">
-              <div className={`flex items-center gap-4 ${isMobile ? 'flex-col items-start' : ''}`}>
-                <div className="p-3 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-lg shadow-lg shadow-teal-500/30 group-hover:scale-110 transition-transform duration-300">
-                  <Clock className="text-white" size={24} />
+            <div className="relative z-10">
+              <h3 className="text-sm uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+                <Clock size={16} className="text-teal-400" />
+                当前专注
+              </h3>
+              
+              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:bg-slate-800/80 transition-all duration-300 cursor-pointer group">
+                <div className={`flex items-center gap-4 ${isMobile ? 'flex-col items-start' : ''}`}>
+                  <div className="p-3 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-lg shadow-lg shadow-teal-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <Clock className="text-white" size={24} />
+                  </div>
+                  
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-white mb-1">{currentFocus.title}</h4>
+                    <p className="text-slate-400 text-sm">{currentFocus.time} • {currentFocus.location}</p>
+                  </div>
+                  
+                  <span className={`px-3 py-1 bg-teal-500/20 text-teal-300 text-xs rounded-full border border-teal-500/30 flex items-center gap-1 ${isMobile ? 'mt-3' : ''}`}>
+                    <Play size={10} fill="currentColor" />
+                    {currentFocus.status}
+                  </span>
                 </div>
-                
-                <div className="flex-1">
-                  <h4 className="text-lg font-semibold text-white mb-1">{currentFocus.title}</h4>
-                  <p className="text-slate-400 text-sm">{currentFocus.time} • {currentFocus.location}</p>
-                </div>
-                
-                <span className={`px-3 py-1 bg-teal-500/20 text-teal-300 text-xs rounded-full border border-teal-500/30 flex items-center gap-1 ${isMobile ? 'mt-3' : ''}`}>
-                  <Play size={10} fill="currentColor" />
-                  {currentFocus.status}
-                </span>
               </div>
             </div>
-          </div>
-        </GlassCard>
+          </GlassCard>
+        )}
 
         {/* Quick Stats */}
-        <div className="space-y-4">
+        <div className={`space-y-4 ${!currentFocus && !isMobile ? 'lg:col-span-3' : ''}`}>
           <GlassCard className="p-5 bg-slate-800/50 border border-slate-700/50">
             <div className="flex items-center justify-between">
               <div>
