@@ -34,7 +34,7 @@ export function App() {
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-in fade-in zoom-in duration-500">
             <GlassCard className="p-12 flex flex-col items-center gap-6">
                 <div className="p-6 bg-white/5 rounded-full border border-white/10">
-                    <Grid size={48} className="text-blue-400" />
+                    <Grid size={48} className="text-teal-400" />
                 </div>
                 <div>
                     <h2 className="text-2xl font-bold text-white mb-2">应用中心</h2>

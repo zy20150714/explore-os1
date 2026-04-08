@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { saveObjectToCookie, loadObjectFromCookie } from '../utils/cookie';
 
 // --- Types ---
 export interface TodoItem {
@@ -80,18 +81,64 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: ReactNode }) {
   // --- State ---
-  const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [manualEvents, setManualEvents] = useState<CalendarEvent[]>([]);
+  const [todos, setTodos] = useState<TodoItem[]>(() => {
+    const savedTodos = loadObjectFromCookie('explore_os_todos');
+    return savedTodos || [];
+  });
+  
+  const [projects, setProjects] = useState<Project[]>(() => {
+    const savedProjects = loadObjectFromCookie('explore_os_projects');
+    return savedProjects || [];
+  });
+  
+  const [manualEvents, setManualEvents] = useState<CalendarEvent[]>(() => {
+    const savedEvents = loadObjectFromCookie('explore_os_events');
+    return savedEvents || [];
+  });
   
   // Journal States
-  const [habits, setHabits] = useState<Habit[]>([
-    { id: '1', name: '喝水 2L', completed: false },
-    { id: '2', name: '阅读 30 分钟', completed: false },
-  ]);
+  const [habits, setHabits] = useState<Habit[]>(() => {
+    const savedHabits = loadObjectFromCookie('explore_os_habits');
+    return savedHabits || [
+      { id: '1', name: '喝水 2L', completed: false },
+      { id: '2', name: '阅读 30 分钟', completed: false },
+    ];
+  });
 
-  const [timeline, setTimeline] = useState<JournalEntry[]>([]);
-  const [weeklyCheckins, setWeeklyCheckins] = useState<boolean[]>([false, false, false, false, false, false, false]);
+  const [timeline, setTimeline] = useState<JournalEntry[]>(() => {
+    const savedTimeline = loadObjectFromCookie('explore_os_timeline');
+    return savedTimeline || [];
+  });
+  
+  const [weeklyCheckins, setWeeklyCheckins] = useState<boolean[]>(() => {
+    const savedCheckins = loadObjectFromCookie('explore_os_checkins');
+    return savedCheckins || [false, false, false, false, false, false, false];
+  });
+
+  // Save data to cookie when it changes
+  useEffect(() => {
+    saveObjectToCookie('explore_os_todos', todos);
+  }, [todos]);
+
+  useEffect(() => {
+    saveObjectToCookie('explore_os_projects', projects);
+  }, [projects]);
+
+  useEffect(() => {
+    saveObjectToCookie('explore_os_events', manualEvents);
+  }, [manualEvents]);
+
+  useEffect(() => {
+    saveObjectToCookie('explore_os_habits', habits);
+  }, [habits]);
+
+  useEffect(() => {
+    saveObjectToCookie('explore_os_timeline', timeline);
+  }, [timeline]);
+
+  useEffect(() => {
+    saveObjectToCookie('explore_os_checkins', weeklyCheckins);
+  }, [weeklyCheckins]);
 
   // --- Actions ---
   const addTodo = (text: string, urgent: boolean, dueDate?: string) => {
