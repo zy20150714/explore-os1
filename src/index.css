@@ -2,27 +2,11 @@
 
 @layer utilities {
   .glass-panel {
-    @apply bg-gradient-to-b from-slate-900/70 to-slate-900/40 border border-white/10 shadow-xl shadow-black/10 transition-all duration-300;
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    @apply bg-gradient-to-b from-slate-900/40 to-slate-900/20 backdrop-blur-xl border-r border-white/10 shadow-2xl;
   }
-  
+
   .glass-card {
-    @apply bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-lg shadow-black/10 transition-all duration-300 hover:shadow-lg hover:shadow-black/20 hover:scale-102 hover:border-white/15;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .glass-button {
-    @apply bg-gradient-to-r from-white/15 to-white/8 border border-white/15 shadow-md shadow-black/10 hover:shadow-md hover:shadow-black/20 hover:bg-white/20 transition-all duration-200;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .glass-input {
-    @apply bg-white/8 border border-white/10 shadow-inner shadow-black/5 focus:border-blue-300 focus:ring-2 focus:ring-blue-300/20 transition-all duration-200;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    @apply bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 shadow-lg transition-all duration-300 hover:shadow-teal-500/10;
   }
 
   .text-glow {
