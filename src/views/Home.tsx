@@ -5,6 +5,7 @@ import { zhCN } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { useData } from '@/context/DataProvider';
 import { ViewType } from '@/components/Sidebar';
+import { useDeviceDetector } from '@/utils/useDeviceDetector';
 
 interface HomeProps {
     onNavigate: (view: ViewType) => void;
@@ -12,6 +13,7 @@ interface HomeProps {
 
 export function Home({ onNavigate }: HomeProps) {
   const { stats, themeMode } = useData();
+  const { isMobile } = useDeviceDetector();
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -37,31 +39,62 @@ export function Home({ onNavigate }: HomeProps) {
     { label: '应用中心', icon: Grid, view: 'apps' as ViewType, color: 'from-indigo-400 to-blue-500' },
   ];
 
+  // Get current time to determine if there's an ongoing focus session
+  const getCurrentFocus = () => {
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTime = currentHour * 60 + currentMinute;
+    
+    // Check if current time is between 14:00 and 15:30
+    const meetingStart = 14 * 60 + 0;
+    const meetingEnd = 15 * 60 + 30;
+    
+    if (currentTime >= meetingStart && currentTime < meetingEnd) {
+      return {
+        title: '产品设计评审',
+        time: '14:00 - 15:30',
+        location: '会议室 A',
+        status: '进行中'
+      };
+    }
+    
+    // Return default focus if no meeting is ongoing
+    return {
+      title: '准备开始工作',
+      time: '随时',
+      location: '我的工作台',
+      status: '待开始'
+    };
+  };
+
+  const currentFocus = getCurrentFocus();
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Welcome Section */}
-      <div className="relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50">
+      <div className={`relative overflow-hidden rounded-3xl p-6 ${isMobile ? 'p-4' : 'p-8'} bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50`}>
         <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/10 rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -ml-24 -mb-24 pointer-events-none" />
         
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div className="space-y-2">
-            <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-200 via-emerald-300 to-white">
+            <h1 className={`font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-200 via-emerald-300 to-white ${isMobile ? 'text-3xl' : 'text-5xl'}`}>
               {getGreeting()}
             </h1>
             <p className="text-slate-300 text-lg">这是您今天的概览，祝您工作顺利！</p>
           </div>
           
           <div className="text-right">
-            <h2 className="text-6xl font-bold text-white tracking-tighter mb-1">{format(now, 'HH:mm')}</h2>
+            <h2 className={`font-bold text-white tracking-tighter mb-1 ${isMobile ? 'text-4xl' : 'text-6xl'}`}>{format(now, 'HH:mm')}</h2>
             <p className="text-xl text-teal-300">{format(now, 'yyyy年M月d日 EEEE', { locale: zhCN })}</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Content */}
+      <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
         {/* Main Focus */}
-        <GlassCard className="lg:col-span-2 p-6 relative overflow-hidden">
+        <GlassCard className={`p-6 relative overflow-hidden ${isMobile ? '' : 'lg:col-span-2'}`}>
           <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full blur-[80px] -mr-16 -mt-16 pointer-events-none" />
           
           <div className="relative z-10">
@@ -71,19 +104,19 @@ export function Home({ onNavigate }: HomeProps) {
             </h3>
             
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:bg-slate-800/80 transition-all duration-300 cursor-pointer group">
-              <div className="flex items-center gap-4">
+              <div className={`flex items-center gap-4 ${isMobile ? 'flex-col items-start' : ''}`}>
                 <div className="p-3 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-lg shadow-lg shadow-teal-500/30 group-hover:scale-110 transition-transform duration-300">
                   <Clock className="text-white" size={24} />
                 </div>
                 
                 <div className="flex-1">
-                  <h4 className="text-lg font-semibold text-white mb-1">产品设计评审</h4>
-                  <p className="text-slate-400 text-sm">14:00 - 15:30 • 会议室 A</p>
+                  <h4 className="text-lg font-semibold text-white mb-1">{currentFocus.title}</h4>
+                  <p className="text-slate-400 text-sm">{currentFocus.time} • {currentFocus.location}</p>
                 </div>
                 
-                <span className="px-3 py-1 bg-teal-500/20 text-teal-300 text-xs rounded-full border border-teal-500/30 flex items-center gap-1">
+                <span className={`px-3 py-1 bg-teal-500/20 text-teal-300 text-xs rounded-full border border-teal-500/30 flex items-center gap-1 ${isMobile ? 'mt-3' : ''}`}>
                   <Play size={10} fill="currentColor" />
-                  进行中
+                  {currentFocus.status}
                 </span>
               </div>
             </div>
@@ -125,18 +158,18 @@ export function Home({ onNavigate }: HomeProps) {
           快速访问
         </h3>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <div className={`grid gap-4 ${isMobile ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6'}`}>
           {shortcuts.map((item, i) => {
             const Icon = item.icon;
             return (
               <GlassCard
                 key={i}
                 onClick={() => onNavigate(item.view)}
-                className="p-5 flex flex-col items-center justify-center gap-3 hover:bg-slate-800/80 cursor-pointer h-40 group transition-all duration-300"
+                className={`flex flex-col items-center justify-center gap-3 hover:bg-slate-800/80 cursor-pointer transition-all duration-300 ${isMobile ? 'p-4 h-32' : 'p-5 h-40'}`}
                 hoverEffect={false}
               >
-                <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg shadow-teal-500/20 group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="text-white" size={28} />
+                <div className={`rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg shadow-teal-500/20 group-hover:scale-110 transition-transform duration-300 ${isMobile ? 'w-12 h-12' : 'w-14 h-14'}`}>
+                  <Icon className="text-white" size={isMobile ? 24 : 28} />
                 </div>
                 <span className="text-slate-300 font-medium group-hover:text-white transition-colors text-center">{item.label}</span>
               </GlassCard>
