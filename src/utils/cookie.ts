@@ -1,7 +1,7 @@
 // Cookie 工具函数
 
-// 设置 cookie
-export function setCookie(name: string, value: string, days: number = 7): void {
+// 设置 cookie (没有过期时间，设置为 10 年后过期)
+export function setCookie(name: string, value: string, days: number = 3650): void {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
   document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
@@ -27,8 +27,8 @@ export function deleteCookie(name: string): void {
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
 }
 
-// 保存对象到 cookie
-export function saveObjectToCookie(name: string, obj: any, days: number = 7): void {
+// 保存对象到 cookie (没有过期时间，设置为 10 年后过期)
+export function saveObjectToCookie(name: string, obj: any, days: number = 3650): void {
   try {
     const jsonString = JSON.stringify(obj);
     setCookie(name, jsonString, days);
