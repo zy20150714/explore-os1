@@ -9,6 +9,7 @@ import { CalendarView } from "@/views/Calendar";
 import { Journal } from "@/views/Journal";
 import { Achievements } from "@/views/Achievements";
 import { Home } from "@/views/Home";
+import { Pomodoro } from "@/views/Pomodoro";
 import { GlassCard } from "@/components/GlassCard";
 import { Grid } from "lucide-react";
 import { DataProvider } from "@/context/DataProvider";
@@ -24,6 +25,7 @@ export function App() {
   const renderView = () => {
     switch (currentView) {
       case 'home': return <Home onNavigate={setCurrentView} />;
+      case 'pomodoro': return <Pomodoro />;
       case 'todo': return <Todo />;
       case 'projects': return <Projects />;
       case 'calendar': return <CalendarView />;

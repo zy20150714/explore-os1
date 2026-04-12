@@ -9,12 +9,13 @@ import {
   LayoutGrid, 
   Wind, 
   Moon, 
-  Sun 
+  Sun,
+  Timer
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useData } from '@/context/DataProvider';
 
-export type ViewType = 'home' | 'todo' | 'projects' | 'affairs' | 'calendar' | 'journal' | 'achievements' | 'apps';
+export type ViewType = 'home' | 'todo' | 'projects' | 'affairs' | 'calendar' | 'journal' | 'achievements' | 'apps' | 'pomodoro';
 
 interface SidebarProps {
   currentView: ViewType;
@@ -24,6 +25,7 @@ interface SidebarProps {
 export function Sidebar({ currentView, onChangeView }: SidebarProps) {
   const menuItems = [
     { id: 'home', label: '我的主页', icon: Home, color: 'from-teal-400 to-emerald-500' },
+    { id: 'pomodoro', label: '番茄时钟', icon: Timer, color: 'from-red-400 to-orange-500' },
     { id: 'todo', label: '待办事项', icon: CheckSquare, color: 'from-blue-400 to-cyan-500' },
     { id: 'projects', label: '长期事项', icon: Briefcase, color: 'from-purple-400 to-pink-500' },
     { id: 'calendar', label: '日程管理', icon: Calendar, color: 'from-emerald-400 to-teal-500' },

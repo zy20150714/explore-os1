@@ -41,6 +41,14 @@ export interface Habit {
   completed: boolean;
 }
 
+export interface PomodoroSession {
+  id: number;
+  type: 'work' | 'shortBreak' | 'longBreak';
+  duration: number;
+  completed: boolean;
+  completedAt: string;
+}
+
 export type ThemeMode = 'glass' | 'normal';
 
 interface DataContextType {
@@ -82,6 +90,10 @@ interface DataContextType {
   // Theme
   themeMode: ThemeMode;
   toggleThemeMode: () => void;
+  
+  // Pomodoro
+  pomodoroSessions: PomodoroSession[];
+  addPomodoroSession: (session: Omit<PomodoroSession, 'id' | 'completedAt'>) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -127,6 +139,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const savedTheme = loadObjectFromCookie('explore_os_theme');
     return savedTheme || 'glass';
   });
+  
+  // Pomodoro state
+  const [pomodoroSessions, setPomodoroSessions] = useState<PomodoroSession[]>(() => {
+    const savedSessions = loadObjectFromCookie('explore_os_pomodoro');
+    return savedSessions || [];
+  });
 
   // Save data to cookie when it changes
   useEffect(() => {
@@ -157,6 +175,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     saveObjectToCookie('explore_os_theme', themeMode);
   }, [themeMode]);
+  
+  // Save pomodoro sessions to cookie
+  useEffect(() => {
+    saveObjectToCookie('explore_os_pomodoro', pomodoroSessions);
+  }, [pomodoroSessions]);
 
   // --- Actions ---
   const addTodo = (text: string, urgent: boolean, dueDate?: string) => {
@@ -239,6 +262,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const toggleThemeMode = () => {
     setThemeMode(prev => prev === 'glass' ? 'normal' : 'glass');
   };
+  
+  // Pomodoro actions
+  const addPomodoroSession = (session: Omit<PomodoroSession, 'id' | 'completedAt'>) => {
+    setPomodoroSessions(prev => [...prev, {
+      ...session,
+      id: Date.now(),
+      completedAt: new Date().toISOString()
+    }]);
+  };
 
   // --- Derived Calculations ---
 
@@ -301,7 +333,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       timeline, addTimelineEntry,
       weeklyCheckins, toggleWeeklyCheckin,
       stats,
-      themeMode, toggleThemeMode
+      themeMode, toggleThemeMode,
+      pomodoroSessions, addPomodoroSession
     }}>
       {children}
     </DataContext.Provider>
