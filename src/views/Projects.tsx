@@ -1,28 +1,41 @@
 import { GlassCard } from '@/components/GlassCard';
-import { Briefcase, Plus, Calendar, X, CheckCircle } from 'lucide-react';
+import { Briefcase, Plus, Calendar, X, CheckCircle, Target } from 'lucide-react';
 import { useData } from '@/context/DataProvider';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils/cn';
+import { AlertCircle } from 'lucide-react';
 
 export function Projects() {
-  const { projects, addProject, checkInProject } = useData();
+  const { projects, addProject, checkInProject, canCheckInToday } = useData();
   const [showForm, setShowForm] = useState(false);
   
-  // Form State
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [errors, setErrors] = useState<{ name?: string; startDate?: string; endDate?: string }>({});
+
+  const validate = () => {
+    const newErrors: typeof errors = {};
+    if (!name.trim()) newErrors.name = '请输入项目名称';
+    if (!startDate) newErrors.startDate = '请选择开始日期';
+    if (!endDate) newErrors.endDate = '请选择结束日期';
+    if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+      newErrors.endDate = '结束日期必须晚于开始日期';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !startDate || !endDate) return;
-    
-    addProject({ name, startDate, endDate });
+    if (!validate()) return;
+    addProject({ name: name.trim(), startDate, endDate });
     setShowForm(false);
     setName("");
     setStartDate("");
     setEndDate("");
+    setErrors({});
   };
 
   const isTodayChecked = (checkIns: string[]) => {
@@ -31,66 +44,145 @@ export function Projects() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6 slide-up">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
         <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-            <span className="p-2 rounded-lg bg-indigo-500/20 text-indigo-300">
-                <Briefcase size={28} />
-            </span>
-            长期事项
+          <span className="p-3 rounded-xl bg-slate-700/50 border border-slate-600/50">
+            <Briefcase size={28} className="text-slate-300" />
+          </span>
+          长期事项
         </h2>
-        <button 
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 font-medium"
+          className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl transition-colors font-medium text-sm"
+          aria-label={showForm ? "取消创建" : "新建项目"}
         >
-          {showForm ? <X size={20} /> : <Plus size={20} />}
+          {showForm ? <X size={18} /> : <Plus size={18} />}
           {showForm ? "取消" : "新建项目"}
-        </button>
+        </motion.button>
+      </motion.div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <GlassCard variant="paper" className="p-4 flex items-center gap-4">
+          <div className="p-2 rounded-lg bg-purple-600/20">
+            <Target size={20} className="text-purple-400" />
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-white">{projects.length}</p>
+            <p className="text-sm text-slate-400">进行中项目</p>
+          </div>
+        </GlassCard>
+        <GlassCard variant="paper" className="p-4 flex items-center gap-4">
+          <div className="p-2 rounded-lg bg-green-600/20">
+            <CheckCircle size={20} className="text-green-400" />
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-white">
+              {projects.reduce((acc, p) => acc + p.checkIns.length, 0)}
+            </p>
+            <p className="text-sm text-slate-400">总打卡天数</p>
+          </div>
+        </GlassCard>
+        <GlassCard variant="paper" className="p-4 flex items-center gap-4">
+          <div className="p-2 rounded-lg bg-amber-600/20">
+            <Calendar size={20} className="text-amber-400" />
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-white">
+              {projects.length > 0 ? projects.reduce((acc, p) => acc + p.progress, 0) / projects.length : 0}%
+            </p>
+            <p className="text-sm text-slate-400">平均进度</p>
+          </div>
+        </GlassCard>
       </div>
 
       <AnimatePresence>
         {showForm && (
             <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
+                initial={{ scale: 0.3, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.3, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="origin-top"
             >
-                <GlassCard className="p-6 mb-6 border-indigo-500/30">
+                <GlassCard variant="paper" className="p-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        <h3 className="text-lg font-medium text-white">创建新项目</h3>
                         <div>
-                            <label className="block text-sm text-slate-400 mb-1">项目名称</label>
+                            <label htmlFor="proj-name" className="block text-sm text-slate-400 mb-1">项目名称</label>
                             <input 
-                                value={name} onChange={e => setName(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-400"
+                                id="proj-name"
+                                value={name} onChange={e => { setName(e.target.value); if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: undefined })); }}
+                                className={cn(
+                                  "w-full bg-slate-700/50 border rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none transition-colors",
+                                  errors.name ? "border-red-500/50 focus:border-red-500" : "border-slate-600/50 focus:border-purple-500"
+                                )}
                                 placeholder="例如：考研复习"
-                                required 
+                                aria-invalid={!!errors.name}
+                                aria-describedby={errors.name ? "proj-name-error" : undefined}
                             />
+                            <AnimatePresence>
+                              {errors.name && (
+                                <motion.p id="proj-name-error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 mt-1 flex items-center gap-1" role="alert">
+                                  <AlertCircle size={12} /> {errors.name}
+                                </motion.p>
+                              )}
+                            </AnimatePresence>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm text-slate-400 mb-1">开始日期</label>
+                                <label htmlFor="proj-start" className="block text-sm text-slate-400 mb-1">开始日期</label>
                                 <input 
+                                    id="proj-start"
                                     type="date"
-                                    value={startDate} onChange={e => setStartDate(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-400"
-                                    required 
+                                    value={startDate} onChange={e => { setStartDate(e.target.value); if (e.target.value) setErrors(prev => ({ ...prev, startDate: undefined })); }}
+                                    className={cn(
+                                      "w-full bg-slate-700/50 border rounded-lg px-3 py-2 text-white focus:outline-none transition-colors",
+                                      errors.startDate ? "border-red-500/50 focus:border-red-500" : "border-slate-600/50 focus:border-purple-500"
+                                    )}
+                                    aria-invalid={!!errors.startDate}
                                 />
+                                <AnimatePresence>
+                                  {errors.startDate && (
+                                    <motion.p id="proj-start-error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 mt-1" role="alert">{errors.startDate}</motion.p>
+                                  )}
+                                </AnimatePresence>
                             </div>
                             <div>
-                                <label className="block text-sm text-slate-400 mb-1">结束日期</label>
+                                <label htmlFor="proj-end" className="block text-sm text-slate-400 mb-1">结束日期</label>
                                 <input 
+                                    id="proj-end"
                                     type="date"
-                                    value={endDate} onChange={e => setEndDate(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-400"
-                                    required 
+                                    value={endDate} onChange={e => { setEndDate(e.target.value); if (e.target.value) setErrors(prev => ({ ...prev, endDate: undefined })); }}
+                                    className={cn(
+                                      "w-full bg-slate-700/50 border rounded-lg px-3 py-2 text-white focus:outline-none transition-colors",
+                                      errors.endDate ? "border-red-500/50 focus:border-red-500" : "border-slate-600/50 focus:border-purple-500"
+                                    )}
+                                    aria-invalid={!!errors.endDate}
+                                    aria-describedby={errors.endDate ? "proj-end-error" : undefined}
                                 />
+                                <AnimatePresence>
+                                  {errors.endDate && (
+                                    <motion.p id="proj-end-error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 mt-1" role="alert">{errors.endDate}</motion.p>
+                                  )}
+                                </AnimatePresence>
                             </div>
                         </div>
                         <div className="flex justify-end">
-                            <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg shadow-lg shadow-indigo-500/20">
+                            <motion.button 
+                              type="submit" 
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl transition-colors font-medium text-sm"
+                            >
                                 创建项目
-                            </button>
+                            </motion.button>
                         </div>
                     </form>
                 </GlassCard>
@@ -98,62 +190,82 @@ export function Projects() {
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {projects.map((project) => {
-            const checkedToday = isTodayChecked(project.checkIns);
-            return (
-              <GlassCard key={project.id} className="p-6 flex flex-col gap-4">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-xl font-semibold text-white">{project.name}</h3>
-                  <div className="bg-white/5 px-3 py-1 rounded-lg text-xs text-indigo-200 border border-indigo-500/30 flex items-center gap-1">
-                    <Calendar size={12} />
-                    {project.endDate} 截止
-                  </div>
-                </div>
-
-                <div className="space-y-2 mt-2">
-                  <div className="flex justify-between text-sm text-slate-300">
-                    <span>进度</span>
-                    <span>{project.progress}%</span>
-                  </div>
-                  <div className="h-3 w-full bg-slate-700/50 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-[0_0_10px_rgba(99,102,241,0.5)] rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: `${project.progress}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-slate-500 text-right">
-                      {project.startDate} 至 {project.endDate} • 已打卡 {project.checkIns.length} 天
-                  </p>
-                </div>
-                
-                <button
-                    onClick={() => checkInProject(project.id)}
-                    disabled={checkedToday}
-                    className={cn(
-                        "mt-2 w-full py-3 rounded-xl flex items-center justify-center gap-2 transition-all font-medium border",
-                        checkedToday
-                            ? "bg-green-500/20 border-green-500/30 text-green-400 cursor-default"
-                            : "bg-indigo-600/80 hover:bg-indigo-500 border-indigo-500/30 text-white shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-[0.98]"
-                    )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <AnimatePresence mode="popLayout">
+          {projects.map((project, index) => {
+              const checkedToday = isTodayChecked(project.checkIns);
+              const available = canCheckInToday(project.id);
+              return (
+                <motion.div
+                  key={project.id}
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, height: 0 }}
+                  transition={{ delay: index * 0.03 }}
                 >
-                    {checkedToday ? (
-                        <>
-                            <CheckCircle size={18} /> 今日已打卡
-                        </>
-                    ) : (
-                        <>
-                            <CheckCircle size={18} /> 今日打卡
-                        </>
-                    )}
-                </button>
-              </GlassCard>
-            );
-        })}
+                  <GlassCard variant="paper" className="p-5 flex flex-col gap-4">
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-lg font-medium text-white">{project.name}</h3>
+                      <div className="bg-slate-700/50 px-2.5 py-1 rounded-lg text-xs text-slate-400 border border-slate-600/30 flex items-center gap-1 shrink-0">
+                        <Calendar size={10} />
+                        {project.endDate} 截止
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-400">进度</span>
+                        <span className="font-medium text-purple-400 tabular-nums">{project.progress.toFixed(2)}%</span>
+                      </div>
+                      <div className="h-2 w-full bg-slate-700/50 rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${project.progress}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="h-full bg-purple-600 rounded-full"
+                        />
+                      </div>
+                      <p className="text-xs text-slate-500">
+                          {project.startDate} 至 {project.endDate} · 已打卡 {project.checkIns.length} 天
+                      </p>
+                    </div>
+                    
+                    <button
+                        onClick={() => checkInProject(project.id)}
+                        disabled={checkedToday || !available}
+                        aria-label={checkedToday ? "今日已打卡" : available ? "打卡" : "不在日期范围内"}
+                        className={cn(
+                            "w-full py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors font-medium text-sm",
+                            checkedToday
+                                ? "bg-green-600/20 text-green-400 border border-green-500/30 cursor-default"
+                                : !available
+                                  ? "bg-slate-700/30 text-slate-600 cursor-not-allowed"
+                                  : "bg-purple-600 hover:bg-purple-500 text-white"
+                        )}
+                    >
+                        {checkedToday ? (
+                            <><CheckCircle size={16} /> 今日已打卡</>
+                        ) : !available ? (
+                            <><Calendar size={16} /> 未到项目日期</>
+                        ) : (
+                            <><CheckCircle size={16} /> 今日打卡</>
+                        )}
+                    </button>
+                  </GlassCard>
+                </motion.div>
+              );
+          })}
+        </AnimatePresence>
         {projects.length === 0 && (
-            <div className="md:col-span-2 text-center py-12 text-slate-500 italic">
-                暂无长期项目，点击右上角新建。
-            </div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="md:col-span-2 text-center py-16 text-slate-500"
+            >
+              <Briefcase size={40} className="mx-auto mb-3 text-slate-600" />
+              <p>暂无长期项目，点击右上角新建。</p>
+            </motion.div>
         )}
       </div>
     </div>

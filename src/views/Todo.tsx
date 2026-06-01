@@ -1,179 +1,291 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/GlassCard';
-import { Plus, Check, AlertCircle, Calendar, Trash2 } from 'lucide-react';
+import { Plus, Check, AlertCircle, Calendar, Trash2, Flag, Clock, ListChecks, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useData } from '@/context/DataProvider';
 
 export function Todo() {
   const { todos, addTodo, toggleTodo, deleteTodo } = useData();
+  const [showForm, setShowForm] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
+  const [errors, setErrors] = useState<{ text?: string; date?: string }>({});
 
-  const handleAddTodo = () => {
-    if (!inputValue.trim()) return;
-    addTodo(inputValue, isUrgent, dueDate || undefined);
-    setInputValue("");
-    setDueDate("");
+  const validate = () => {
+    const newErrors: { text?: string; date?: string } = {};
+    if (!inputValue.trim()) {
+      newErrors.text = '请输入任务名称';
+    }
+    if (!dueDate) {
+      newErrors.date = '请选择截止日期';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-        <span className="p-2 rounded-lg bg-teal-500/20 text-teal-300">
-          <Check size={28} />
-        </span>
-        待办事项清单
-      </h2>
+  const handleAddTodo = () => {
+    if (!validate()) return;
+    addTodo(inputValue.trim(), isUrgent, dueDate);
+    setInputValue("");
+    setDueDate("");
+    setIsUrgent(false);
+    setErrors({});
+    setShowForm(false);
+  };
 
-      <GlassCard className="p-6">
-        <div className="flex flex-col gap-4">
-             <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
-                <input
+  const pendingTodos = todos.filter(t => !t.completed);
+  const completedTodos = todos.filter(t => t.completed);
+
+  return (
+    <div className="space-y-6 slide-up">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
+        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+          <span className="p-3 rounded-xl bg-slate-700/50 border border-slate-600/50">
+            <ListChecks size={28} className="text-slate-300" />
+          </span>
+          待办事项
+        </h2>
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { setShowForm(!showForm); setErrors({}); }}
+          className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl transition-colors font-medium text-sm"
+          aria-label={showForm ? "取消添加" : "添加新任务"}
+        >
+          {showForm ? <X size={18} /> : <Plus size={18} />}
+          {showForm ? "取消" : "新建任务"}
+        </motion.button>
+      </motion.div>
+
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ scale: 0.3, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.3, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="origin-top"
+          >
+            <GlassCard variant="paper" className="p-6">
+              <h3 className="text-lg font-medium text-white mb-4">新建任务</h3>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="todo-text" className="block text-sm text-slate-400 mb-1">任务名称</label>
+                  <input
+                    id="todo-text"
                     type="text"
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => { setInputValue(e.target.value); if (e.target.value.trim()) setErrors(prev => ({ ...prev, text: undefined })); }}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddTodo()}
-                    placeholder="添加新任务..."
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-teal-500/50 focus:bg-white/10 transition-all"
-                />
-                
-                {/* Priority Toggle Segmented Control */}
-                <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
-                    <button
-                    onClick={() => setIsUrgent(false)}
+                    placeholder="输入任务内容..."
+                    aria-invalid={!!errors.text}
+                    aria-describedby={errors.text ? "todo-text-error" : undefined}
                     className={cn(
-                        "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
-                        !isUrgent 
-                        ? "bg-teal-500 text-white shadow-lg shadow-teal-500/20" 
-                        : "text-slate-400 hover:text-white"
+                      "w-full bg-slate-700/50 border rounded-lg px-3 py-2.5 text-white placeholder-slate-500 focus:outline-none transition-colors",
+                      errors.text ? "border-red-500/50 focus:border-red-500" : "border-slate-600/50 focus:border-teal-500"
                     )}
-                    >
-                    一般
-                    </button>
-                    <button
-                    onClick={() => setIsUrgent(true)}
-                    className={cn(
-                        "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
-                        isUrgent 
-                        ? "bg-red-500 text-white shadow-lg shadow-red-500/20" 
-                        : "text-slate-400 hover:text-white"
+                  />
+                  <AnimatePresence>
+                    {errors.text && (
+                      <motion.p 
+                        id="todo-text-error"
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-xs text-red-400 mt-1 flex items-center gap-1"
+                        role="alert"
+                      >
+                        <AlertCircle size={12} /> {errors.text}
+                      </motion.p>
                     )}
-                    >
-                    <AlertCircle size={14} />
-                    紧急
-                    </button>
+                  </AnimatePresence>
                 </div>
-            </div>
-            
-            <div className="flex justify-between items-center">
-                 <div className="flex items-center bg-white/5 rounded-lg border border-white/10 px-3 py-1.5 w-auto max-w-[200px]">
-                     <Calendar size={16} className="text-slate-400 mr-2" />
-                     <input 
-                        type="date"
-                        value={dueDate}
-                        onChange={(e) => setDueDate(e.target.value)}
-                        className="bg-transparent border-none text-sm text-white focus:ring-0 outline-none w-full"
-                     />
-                 </div>
+                
+                <div>
+                  <label htmlFor="todo-date" className="block text-sm text-slate-400 mb-1">截止日期</label>
+                  <div className="flex items-center bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 max-w-[220px]">
+                    <Calendar size={16} className="text-slate-400 mr-2 shrink-0" aria-hidden="true" />
+                    <input 
+                      id="todo-date"
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => { setDueDate(e.target.value); if (e.target.value) setErrors(prev => ({ ...prev, date: undefined })); }}
+                      aria-invalid={!!errors.date}
+                      aria-describedby={errors.date ? "todo-date-error" : undefined}
+                      className="bg-transparent border-none text-sm text-white focus:ring-0 outline-none w-full"
+                    />
+                  </div>
+                  <AnimatePresence>
+                    {errors.date && (
+                      <motion.p 
+                        id="todo-date-error"
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-xs text-red-400 mt-1 flex items-center gap-1"
+                        role="alert"
+                      >
+                        <AlertCircle size={12} /> {errors.date}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-                <button
+                <div>
+                  <span className="block text-sm text-slate-400 mb-2">优先级</span>
+                  <div className="flex bg-slate-700/50 p-1 rounded-lg border border-slate-600/50 w-fit">
+                    <button
+                      onClick={() => setIsUrgent(false)}
+                      aria-label="一般优先级"
+                      aria-pressed={!isUrgent}
+                      className={cn(
+                        "px-4 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5",
+                        !isUrgent 
+                          ? "bg-teal-600 text-white" 
+                          : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      <Flag size={14} /> 一般
+                    </button>
+                    <button
+                      onClick={() => setIsUrgent(true)}
+                      aria-label="紧急优先级"
+                      aria-pressed={isUrgent}
+                      className={cn(
+                        "px-4 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5",
+                        isUrgent 
+                          ? "bg-red-600 text-white" 
+                          : "text-slate-400 hover:text-white"
+                      )}
+                    >
+                      <AlertCircle size={14} /> 紧急
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleAddTodo}
-                    className="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-xl shadow-lg shadow-teal-500/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                    className="bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-xl transition-colors flex items-center gap-2 font-medium text-sm"
+                  >
+                    <Plus size={18} /> 添加任务
+                  </motion.button>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-sm text-slate-400">
+          <Clock size={14} className="text-slate-500" />
+          <span>待办 {pendingTodos.length}</span>
+          <span className="text-slate-600">|</span>
+          <Check size={14} className="text-slate-500" />
+          <span>完成 {completedTodos.length}</span>
+        </div>
+        
+        <AnimatePresence mode="popLayout">
+          <div className="space-y-2">
+            {pendingTodos.map((todo, index) => (
+              <motion.div
+                key={todo.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                transition={{ delay: index * 0.03 }}
+              >
+                <GlassCard 
+                  variant="paper"
+                  className={cn(
+                    "flex items-center gap-3 p-4 border-l-2",
+                    todo.urgent ? "border-l-red-500" : "border-l-teal-500"
+                  )}
+                  hoverEffect={false}
                 >
-                    <Plus size={20} /> 添加
-                </button>
-            </div>
-        </div>
-      </GlassCard>
-
-      <div className="grid grid-cols-1 gap-8">
-        {/* Pending Tasks */}
-        <div className="space-y-4">
-             <h3 className="text-lg font-medium text-slate-300 border-b border-white/10 pb-2">待办事项 ({todos.filter(t => !t.completed).length})</h3>
-             <div className="space-y-3">
-                {todos.filter(t => !t.completed).map((todo) => (
-                    <GlassCard 
-                        key={todo.id} 
-                        className={cn(
-                        "flex items-center gap-4 p-4 transition-all duration-300 border-l-4",
-                        todo.urgent ? "border-l-red-500" : "border-l-teal-500"
-                        )}
-                    >
-                        <div 
-                            className="w-6 h-6 rounded-full border-2 border-slate-500 hover:border-teal-400 flex items-center justify-center transition-all shrink-0 cursor-pointer"
-                            onClick={() => toggleTodo(todo.id)}
-                        />
-                        <div className="flex-1 flex flex-col cursor-pointer" onClick={() => toggleTodo(todo.id)}>
-                            <span className="text-lg text-slate-100">{todo.text}</span>
-                            {todo.dueDate && (
-                                <span className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-                                    <Calendar size={12} /> {todo.dueDate}
-                                </span>
-                            )}
-                        </div>
-                        {todo.urgent && (
-                            <span className="text-xs px-2 py-1 rounded bg-red-500/20 text-red-300 border border-red-500/30 shrink-0 flex items-center gap-1">
-                                <AlertCircle size={12} /> 紧急
-                            </span>
-                        )}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                deleteTodo(todo.id);
-                            }}
-                            className="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
-                            title="删除待办事项"
-                        >
-                            <Trash2 size={18} />
-                        </button>
-                    </GlassCard>
-                ))}
-                {todos.filter(t => !t.completed).length === 0 && (
-                    <p className="text-slate-500 text-sm py-4 italic">暂无待办任务。</p>
-                )}
-             </div>
-        </div>
-
-        {/* Completed Tasks */}
-        <div className="space-y-4">
-             <h3 className="text-lg font-medium text-slate-400 border-b border-white/10 pb-2">已完成</h3>
-             <div className="space-y-3 opacity-60 hover:opacity-100 transition-opacity">
-                {todos.filter(t => t.completed).map((todo) => (
-                    <GlassCard 
-                        key={todo.id} 
-                        className="flex items-center gap-4 p-4 bg-white/5 border-l-4 border-l-slate-500"
-                    >
-                        <div 
-                            className="w-6 h-6 rounded-full border-2 bg-teal-500/20 border-teal-500 text-teal-500 flex items-center justify-center shrink-0 cursor-pointer"
-                            onClick={() => toggleTodo(todo.id)}
-                        >
-                             <Check size={14} strokeWidth={3} />
-                        </div>
-                        <span 
-                            className="flex-1 text-lg line-through text-slate-500 cursor-pointer"
-                            onClick={() => toggleTodo(todo.id)}
-                        >
-                            {todo.text}
-                        </span>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                deleteTodo(todo.id);
-                            }}
-                            className="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
-                            title="删除待办事项"
-                        >
-                            <Trash2 size={18} />
-                        </button>
-                    </GlassCard>
-                ))}
-                {todos.filter(t => t.completed).length === 0 && (
-                    <p className="text-slate-600 text-sm py-4 italic">暂无完成记录。</p>
-                )}
-             </div>
-        </div>
+                  <button
+                    onClick={() => toggleTodo(todo.id)}
+                    aria-label={`标记 "${todo.text}" 为完成`}
+                    className="w-5 h-5 rounded-full border-2 border-slate-500 hover:border-teal-400 flex items-center justify-center transition-colors shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-slate-200 truncate block">{todo.text}</span>
+                    {todo.dueDate && (
+                      <span className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                        <Calendar size={10} /> {todo.dueDate}
+                      </span>
+                    )}
+                  </div>
+                  {todo.urgent && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 shrink-0 flex items-center gap-1">
+                      <AlertCircle size={10} /> 紧急
+                    </span>
+                  )}
+                  <button
+                    onClick={() => deleteTodo(todo.id)}
+                    aria-label={`删除 "${todo.text}"`}
+                    className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </div>
+        </AnimatePresence>
+        {pendingTodos.length === 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12 text-slate-500"
+          >
+            <Check size={40} className="mx-auto mb-3 text-slate-600" />
+            <p>暂无待办任务</p>
+          </motion.div>
+        )}
       </div>
+
+      {completedTodos.length > 0 && (
+        <div className="space-y-4 pt-4 border-t border-slate-700/50">
+          <h3 className="text-sm font-medium text-slate-500 flex items-center gap-1.5">
+            <Check size={14} className="text-green-500" />
+            已完成 ({completedTodos.length})
+          </h3>
+          <div className="space-y-2">
+            {completedTodos.map((todo) => (
+              <GlassCard 
+                key={todo.id}
+                variant="paper"
+                className="flex items-center gap-3 p-4 opacity-60 border-l-2 border-l-slate-600"
+                hoverEffect={false}
+              >
+                <button
+                  onClick={() => toggleTodo(todo.id)}
+                  aria-label={`撤销 "${todo.text}" 的完成状态`}
+                  className="w-5 h-5 rounded-full bg-teal-600/30 border-2 border-teal-500 text-teal-500 flex items-center justify-center shrink-0"
+                >
+                  <Check size={12} strokeWidth={3} />
+                </button>
+                <span className="flex-1 text-slate-500 line-through truncate">{todo.text}</span>
+                <button
+                  onClick={() => deleteTodo(todo.id)}
+                  aria-label={`删除 "${todo.text}"`}
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </GlassCard>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

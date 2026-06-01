@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { 
   Home, 
   CheckSquare, 
@@ -5,16 +6,17 @@ import {
   Calendar, 
   BookOpen, 
   Award, 
-  Grid, 
-  LayoutGrid, 
-  Wind, 
-  Moon, 
-  Sun 
+  Grid,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  Timer
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils/cn';
 import { useData } from '@/context/DataProvider';
 
-export type ViewType = 'home' | 'todo' | 'projects' | 'affairs' | 'calendar' | 'journal' | 'achievements' | 'apps';
+export type ViewType = 'home' | 'todo' | 'projects' | 'affairs' | 'calendar' | 'journal' | 'achievements' | 'apps' | 'pomodoro' | 'settings';
 
 interface SidebarProps {
   currentView: ViewType;
@@ -22,34 +24,72 @@ interface SidebarProps {
 }
 
 export function Sidebar({ currentView, onChangeView }: SidebarProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const { installedApps, themeMode, toggleThemeMode } = useData();
+  
   const menuItems = [
-    { id: 'home', label: '我的主页', icon: Home, color: 'from-teal-400 to-emerald-500' },
-    { id: 'todo', label: '待办事项', icon: CheckSquare, color: 'from-blue-400 to-cyan-500' },
-    { id: 'projects', label: '长期事项', icon: Briefcase, color: 'from-purple-400 to-pink-500' },
-    { id: 'calendar', label: '日程管理', icon: Calendar, color: 'from-emerald-400 to-teal-500' },
-    { id: 'journal', label: '生活手账', icon: BookOpen, color: 'from-amber-400 to-orange-500' },
-    { id: 'achievements', label: '我的成就', icon: Award, color: 'from-yellow-400 to-amber-500' },
-    { id: 'apps', label: '应用中心', icon: Grid, color: 'from-indigo-400 to-blue-500' },
+    { id: 'home', label: '我的主页', icon: Home },
+    { id: 'todo', label: '待办事项', icon: CheckSquare },
+    { id: 'projects', label: '长期事项', icon: Briefcase },
+    { id: 'calendar', label: '日程管理', icon: Calendar },
+    { id: 'journal', label: '生活手账', icon: BookOpen },
+    { id: 'achievements', label: '我的成就', icon: Award },
+    { id: 'pomodoro', label: '番茄时钟', icon: Timer, requiresInstall: true },
+    { id: 'apps', label: '应用中心', icon: Grid },
   ];
 
+  const visibleItems = menuItems.filter(item => {
+    if (!item.requiresInstall) return true;
+    return installedApps?.includes(item.id);
+  });
+
   return (
-    <aside className="w-64 h-full bg-slate-800 border-r border-slate-700 flex flex-col p-4 rounded-r-2xl border-l-0 z-20 transition-all duration-300">
-      {/* Logo Section */}
-      <div className="flex items-center gap-3 px-4 py-6 mb-6">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-teal-500/30 ring-2 ring-teal-500/20">
+    <motion.aside 
+      animate={{ width: collapsed ? 72 : 256 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="h-full glass-panel flex flex-col relative z-20"
+      aria-label="主导航"
+    >
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="absolute -right-3 top-8 w-6 h-6 bg-slate-800 border border-slate-700/50 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors z-30 shadow-md"
+        aria-label={collapsed ? "展开侧边栏" : "收起侧边栏"}
+      >
+        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+      </button>
+
+      <div className={cn(
+        "flex items-center gap-3 px-4 py-6 mb-4",
+        collapsed && "px-0 justify-center"
+      )}>
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          className="w-10 h-10 rounded-full bg-teal-600 flex items-center justify-center shadow-md shrink-0"
+        >
           <div className="w-4 h-4 bg-white rounded-full" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-white">
-            Explore OS
-          </h1>
-          <p className="text-xs text-slate-400">现代化工作台</p>
-        </div>
+        </motion.div>
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="overflow-hidden"
+            >
+              <h1 className="text-xl font-semibold text-white">
+                Explore OS
+              </h1>
+              <p className="text-xs text-slate-500">现代化工作台</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-2 px-2">
-        {menuItems.map((item) => {
+      <nav className={cn(
+        "flex-1 space-y-1 px-3 overflow-y-auto",
+        collapsed && "px-2"
+      )} aria-label="导航菜单">
+        {visibleItems.map((item, index) => {
           const isActive = currentView === item.id;
           const Icon = item.icon;
           
@@ -57,33 +97,95 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
             <button
               key={item.id}
               onClick={() => onChangeView(item.id as ViewType)}
+              aria-label={item.label}
+              aria-current={isActive ? 'page' : undefined}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden",
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-200 relative",
+                collapsed && "justify-center px-0",
                 isActive 
-                  ? "bg-slate-700 text-white border border-slate-600"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-slate-700/80 text-white"
+                  : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
               )}
             >
               {isActive && (
-                <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${item.color}`} />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-teal-500 rounded-r-full" />
               )}
-              <Icon 
-                size={20} 
-                className={cn(
-                  "transition-transform duration-300 group-hover:scale-110",
-                  isActive ? "text-teal-400" : "text-slate-400 group-hover:text-teal-300"
-                )} 
-              />
-              <span className="font-medium">{item.label}</span>
+              <Icon size={20} className="shrink-0" aria-hidden="true" />
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="font-medium whitespace-nowrap text-sm"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           );
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="mt-auto px-4 pb-6 opacity-40 text-xs text-center font-mono tracking-widest text-slate-400">
-        Explore OS v2.1
+      <div className={cn(
+        "mt-auto px-3 pb-4 space-y-2",
+        collapsed && "px-2"
+      )}>
+        <button
+          onClick={() => onChangeView('settings')}
+          aria-label="设置"
+          className={cn(
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors",
+            collapsed && "justify-center px-0",
+            currentView === 'settings' && "bg-slate-700/80 text-white"
+          )}
+        >
+          <Settings size={20} aria-hidden="true" />
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-sm"
+              >
+                设置
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </button>
+
+        <button
+          onClick={toggleThemeMode}
+          aria-label={themeMode === 'glass' ? "切换到简约模式" : "切换到玻璃模式"}
+          className={cn(
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors",
+            collapsed && "justify-center px-0"
+          )}
+        >
+          <div className="w-5 h-5 rounded-full border-2 border-slate-500 shrink-0" aria-hidden="true" />
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-sm"
+              >
+                {themeMode === 'glass' ? '简约模式' : '玻璃模式'}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </button>
+
+        <div className={cn(
+          "text-center text-xs text-slate-600 pt-2",
+          collapsed ? "text-[10px]" : "tracking-widest"
+        )}>
+          {collapsed ? 'v3.1' : 'Explore OS v3.1'}
+        </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

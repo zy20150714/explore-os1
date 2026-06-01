@@ -103,7 +103,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           transition={{ delay: 0.9 }}
           className="text-xs text-slate-500 tracking-widest"
         >
-          v2.1
+          v3.0
         </motion.div>
       </div>
     </motion.div>
