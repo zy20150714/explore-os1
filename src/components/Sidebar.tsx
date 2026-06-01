@@ -25,7 +25,7 @@ interface SidebarProps {
 
 export function Sidebar({ currentView, onChangeView }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const { installedApps, themeMode, toggleThemeMode } = useData();
+  const { installedApps, settings, updateSettings } = useData();
   
   const menuItems = [
     { id: 'home', label: '我的主页', icon: Home },
@@ -89,7 +89,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
         "flex-1 space-y-1 px-3 overflow-y-auto",
         collapsed && "px-2"
       )} aria-label="导航菜单">
-        {visibleItems.map((item, index) => {
+        {visibleItems.map((item) => {
           const isActive = currentView === item.id;
           const Icon = item.icon;
           
@@ -157,8 +157,13 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
         </button>
 
         <button
-          onClick={toggleThemeMode}
-          aria-label={themeMode === 'glass' ? "切换到简约模式" : "切换到玻璃模式"}
+          onClick={() => {
+            const modes = ['glass', 'normal', 'dark', 'warm', 'ocean'] as const;
+            const currentIdx = modes.indexOf(settings.themeMode);
+            const nextMode = modes[(currentIdx + 1) % modes.length];
+            updateSettings({ themeMode: nextMode });
+          }}
+          aria-label="切换主题"
           className={cn(
             "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors",
             collapsed && "justify-center px-0"
@@ -173,7 +178,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
                 exit={{ opacity: 0 }}
                 className="text-sm"
               >
-                {themeMode === 'glass' ? '简约模式' : '玻璃模式'}
+                {settings.themeMode === 'glass' ? '简约模式' : '玻璃模式'}
               </motion.span>
             )}
           </AnimatePresence>

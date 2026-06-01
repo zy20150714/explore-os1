@@ -13,7 +13,6 @@ export function Pomodoro() {
   const [workDuration, setWorkDuration] = useState(25);
   const [breakDuration, setBreakDuration] = useState(5);
   const [showSettings, setShowSettings] = useState(false);
-  const [completedSessions, setCompletedSessions] = useState(0);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const todayStr = new Date().toISOString().split('T')[0];
@@ -29,7 +28,6 @@ export function Pomodoro() {
             
             if (mode === 'work') {
               addPomodoroSession({ date: todayStr, duration: workDuration, type: 'work' });
-              setCompletedSessions(c => c + 1);
               setMode('break');
               return breakDuration * 60;
             } else {
@@ -260,7 +258,7 @@ export function Pomodoro() {
             历史记录
           </h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {[...pomodoroSessions].reverse().slice(0, 20).map((session, i) => (
+            {[...pomodoroSessions].reverse().slice(0, 20).map((session) => (
               <div key={session.id} className="flex items-center justify-between py-2 border-b border-slate-700/30 last:border-0">
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${session.type === 'work' ? 'bg-teal-500' : 'bg-blue-500'}`} />

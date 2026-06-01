@@ -1,5 +1,5 @@
 import { GlassCard } from '@/components/GlassCard';
-import { BookOpen, CheckCircle2, Plus, Smile, Heart, Star, Coffee } from 'lucide-react';
+import { BookOpen, CheckCircle2, Plus, Heart, Star, Coffee } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useData } from '@/context/DataProvider';
 import { useState } from 'react';

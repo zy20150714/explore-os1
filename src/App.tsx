@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SplashScreen } from "@/components/SplashScreen";
 import { Layout } from "@/components/Layout";
@@ -24,8 +24,7 @@ const THEME_BACKGROUNDS: Record<string, string> = {
 };
 
 function AppContent() {
-  const { installApp, uninstallApp, installedApps, settings, updateSettings } = useData();
-  const [loading, setLoading] = useState(true);
+  const { installApp, uninstallApp, installedApps, settings } = useData();
   const [currentView, setCurrentView] = useState<ViewType>('home');
 
   const handleInstall = useCallback((appId: string) => {

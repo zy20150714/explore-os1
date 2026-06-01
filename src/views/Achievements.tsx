@@ -10,7 +10,7 @@ export function Achievements() {
     { label: '任务完成数', value: stats.completedTodos.toString(), icon: CheckSquare, color: 'text-blue-400', bg: 'bg-blue-500/20', gradient: 'from-blue-500/20 to-blue-600/10', border: 'border-blue-500/20' },
     { label: '平均项目进度', value: `${stats.avgProjectProgress}%`, icon: TrendingUp, color: 'text-green-400', bg: 'bg-green-500/20', gradient: 'from-green-500/20 to-green-600/10', border: 'border-green-500/20' },
     { label: '习惯打卡次数', value: `${stats.habitStreak} 次`, icon: Award, color: 'text-purple-400', bg: 'bg-purple-500/20', gradient: 'from-purple-500/20 to-purple-600/10', border: 'border-purple-500/20' },
-    { label: '日程事件数', value: stats.totalEvents.toString(), icon: Calendar, color: 'text-orange-400', bg: 'bg-orange-500/20', gradient: 'from-orange-500/20 to-orange-600/10', border: 'border-orange-500/20' },
+    { label: '日程事件数', value: stats.todayEvents.toString(), icon: Calendar, color: 'text-orange-400', bg: 'bg-orange-500/20', gradient: 'from-orange-500/20 to-orange-600/10', border: 'border-orange-500/20' },
   ];
 
   return (
@@ -136,7 +136,7 @@ export function Achievements() {
              </motion.div>
              <h3 className="text-xl font-semibold text-white">日程回顾</h3>
              <p className="text-slate-400 text-sm px-6">
-                {stats.totalEvents === 0 ? "暂无日程安排。" : `您有 ${stats.totalEvents} 个日程安排。请合理安排时间。`}
+                {stats.todayEvents === 0 ? "暂无日程安排。" : `您有 ${stats.todayEvents} 个日程安排。请合理安排时间。`}
              </p>
           </GlassCard>
       </div>

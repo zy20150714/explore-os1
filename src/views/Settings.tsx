@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/GlassCard';
-import { Settings, Cookie, Download, Upload, Trash2, Shield, Palette, Database, Save, X, Check, AlertTriangle, Image, Type, Layout, Sun, Moon, Waves, Flame, Droplets, Minus, Plus, Eraser, Wallpaper } from 'lucide-react';
+import { Settings, Cookie, Download, Upload, Trash2, Shield, Palette, Database, Save, X, Check, AlertTriangle, Image, Type, Layout, Minus, Plus, Wallpaper } from 'lucide-react';
 import { useData, ThemeMode, AccentColor, DensityMode, FontSizeMode, WallpaperMode } from '@/context/DataProvider';
 
 const THEME_MODES = [
@@ -32,10 +32,10 @@ const WALLPAPER_MODES = [
 ];
 
 const PRESET_WALLPAPERS = [
-  { name: '山景', url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=serene%20mountain%20landscape%20at%20sunset%20with%20soft%20clouds%20and%20golden%20light%2C%20digital%20art%20style%2C%20minimalist%20background%20wallpaper&image_size=landscape_16_9' },
-  { name: '海浪', url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ocean%20waves%20at%20dawn%20with%20soft%20blue%20and%20teal%20colors%2C%20calm%20sea%20scene%2C%20minimalist%20desktop%20wallpaper%20style&image_size=landscape_16_9' },
-  { name: '森林', url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=misty%20forest%20with%20sunlight%20filtering%20through%20trees%2C%20green%20nature%20scene%2C%20peaceful%20desktop%20background%2C%20minimalist%20style&image_size=landscape_16_9' },
-  { name: '星空', url: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=starry%20night%20sky%20with%20milky%20way%2C%20deep%20blue%20and%20purple%20cosmos%2C%20minimalist%20space%20wallpaper%20for%20desktop&image_size=landscape_16_9' },
+  { name: '山景', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80' },
+  { name: '海浪', url: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1920&q=80' },
+  { name: '森林', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80' },
+  { name: '星空', url: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80' },
 ];
 
 export function SettingsView() {
@@ -43,7 +43,6 @@ export function SettingsView() {
     cookieExpiryDays, setCookieExpiryDays,
     clearAllData, exportData, importData,
     settings, updateSettings,
-    themeMode, toggleThemeMode,
   } = useData();
   
   const [activeTab, setActiveTab] = useState<'theme' | 'personalize' | 'data' | 'about'>('theme');

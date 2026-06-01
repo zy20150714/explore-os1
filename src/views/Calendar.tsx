@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/GlassCard';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Clock, CalendarDays, Edit2, Trash2, X } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Clock, Edit2, Trash2, X } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, getDay } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import { cn } from '@/utils/cn';
@@ -199,6 +199,11 @@ export function CalendarView() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ delay: idx * 0.02 }}
+                      onClick={() => typeof event.id === 'number' && handleEditEvent(event)}
+                      onKeyDown={(e) => e.key === 'Enter' && typeof event.id === 'number' && handleEditEvent(event)}
+                      role={typeof event.id === 'number' ? 'button' : undefined}
+                      tabIndex={typeof event.id === 'number' ? 0 : undefined}
+                      className={typeof event.id === 'number' ? 'cursor-pointer' : ''}
                     >
                       <GlassCard variant="minimal" className="p-2.5 md:p-3 flex items-start gap-2.5" hoverEffect={false}>
                             <div 

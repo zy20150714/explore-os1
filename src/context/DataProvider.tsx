@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect, useCallback, useMemo, useRef } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback, useMemo } from 'react';
 import { isSameDay } from 'date-fns';
 import { saveObjectToCookie, loadObjectFromCookie, refreshCookie, DEFAULT_COOKIE_DAYS, clearAllExploreOSCookies } from '../utils/cookie';
 

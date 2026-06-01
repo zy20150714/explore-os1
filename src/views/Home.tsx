@@ -13,7 +13,7 @@ interface HomeProps {
 }
 
 export function Home({ onNavigate }: HomeProps) {
-  const { stats, themeMode, installedApps } = useData();
+  const { stats, installedApps } = useData();
   const { isMobile } = useDeviceDetector();
   const [now, setNow] = useState(new Date());
 
@@ -44,9 +44,9 @@ export function Home({ onNavigate }: HomeProps) {
     { label: '日程安排', icon: Calendar, view: 'calendar' as ViewType },
     { label: '生活手账', icon: BookOpen, view: 'journal' as ViewType },
     { label: '成就系统', icon: Trophy, view: 'achievements' as ViewType },
-    { label: '番茄时钟', icon: Timer, view: 'pomodoro' as ViewType, requiresInstall: true },
+    { label: '番茄时钟', icon: Timer, view: 'pomodoro' as ViewType, requiresInstall: true, id: 'pomodoro' },
     { label: '应用中心', icon: Grid, view: 'apps' as ViewType },
-  ].filter(item => !item.requiresInstall || installedApps?.includes(item.id));
+  ].filter((item: any) => !item.requiresInstall || installedApps?.includes(item.id));
 
   return (
     <div className="space-y-6 slide-up">
@@ -110,7 +110,7 @@ export function Home({ onNavigate }: HomeProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-400 text-sm">日程总数</p>
-                <p className="text-2xl font-bold text-white mt-1 tabular-nums">{stats.totalEvents}</p>
+                <p className="text-2xl font-bold text-white mt-1 tabular-nums">{stats.todayEvents}</p>
               </div>
               <div className="p-2 rounded-lg bg-purple-600/20">
                 <CalendarPlus size={22} className="text-purple-400" />
