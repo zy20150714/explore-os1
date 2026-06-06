@@ -87,7 +87,7 @@ function AppContent() {
                 { name: '安全中心', desc: '管理隐私与安全设置', icon: Shield },
               ].map((app, i) => (
                 <motion.div
-                  key={i}
+                  key={app.id || app.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 + i * 0.03 }}

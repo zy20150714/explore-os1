@@ -52,10 +52,11 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
   };
 
   return (
-    <motion.aside 
-      animate={{ width: collapsed ? 72 : 256 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="h-full glass-panel flex flex-col relative z-20"
+    <aside 
+      className={cn(
+        "h-full glass-panel flex flex-col relative z-20 transition-[width] duration-300 ease-in-out",
+        collapsed ? "w-[72px]" : "w-64"
+      )}
       aria-label="主导航"
     >
       <button
@@ -199,6 +200,6 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
           {collapsed ? 'v3.2' : 'Explore OS v3.2'}
         </div>
       </div>
-    </motion.aside>
+    </aside>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/GlassCard';
 import { Settings, Cookie, Download, Upload, Trash2, Shield, Palette, Database, Save, X, Check, AlertTriangle, Image, Type, Layout, Minus, Plus, Wallpaper } from 'lucide-react';
@@ -53,6 +53,15 @@ export function SettingsView() {
   const [exportResult, setExportResult] = useState(false);
   const [uploadingWallpaper, setUploadingWallpaper] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const exportTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const importTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (exportTimerRef.current) clearTimeout(exportTimerRef.current);
+      if (importTimerRef.current) clearTimeout(importTimerRef.current);
+    };
+  }, []);
 
   const handleSaveDays = () => {
     const days = parseInt(customDays, 10);
@@ -77,7 +86,7 @@ export function SettingsView() {
   const handleImport = () => {
     const success = importData(importText);
     setImportResult(success ? 'success' : 'error');
-    setTimeout(() => setImportResult(null), 3000);
+    importTimerRef.current = setTimeout(() => setImportResult(null), 3000);
     if (success) setImportText('');
   };
 
@@ -271,9 +280,9 @@ export function SettingsView() {
                   <div className="space-y-3 pt-3 border-t border-slate-700/50">
                     <p className="text-xs text-slate-400">选择预设壁纸或上传自定义图片</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {PRESET_WALLPAPERS.map((wp, i) => (
+                      {PRESET_WALLPAPERS.map((wp) => (
                         <button
-                          key={i}
+                          key={wp.url}
                           onClick={() => updateSettings({ customWallpaper: wp.url })}
                           className={`relative rounded-xl overflow-hidden border-2 transition-all ${
                             settings.customWallpaper === wp.url ? 'border-teal-500' : 'border-transparent hover:border-slate-500'
@@ -313,7 +322,7 @@ export function SettingsView() {
                         max="100"
                         value={Math.round(settings.wallpaperOpacity * 100)}
                         onChange={(e) => updateSettings({ wallpaperOpacity: parseInt(e.target.value) / 100 })}
-                        className="flex-1 h-1.5 bg-slate-700 rounded-full appearance-none cursor-pointer"
+                        className="flex-1 h-1.5 bg-slate-700 rounded-full appearance-none cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-800"
                       />
                       <Plus size={14} className="text-slate-500" />
                       <span className="text-xs text-slate-400 w-12 text-right">{Math.round(settings.wallpaperOpacity * 100)}%</span>

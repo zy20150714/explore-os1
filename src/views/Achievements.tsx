@@ -4,13 +4,17 @@ import { Award, TrendingUp, Calendar, CheckSquare, Trophy, Star, Target } from '
 import { useData } from '@/context/DataProvider';
 
 export function Achievements() {
-  const { stats } = useData();
+  const { stats, settings } = useData();
+
+  const accentHex = {
+    teal: '#14b8a6', blue: '#3b82f6', purple: '#a855f7', orange: '#f97316', green: '#22c55e', pink: '#ec4899'
+  }[settings.accentColor] || '#14b8a6';
 
   const statCards = [
-    { label: '任务完成数', value: stats.completedTodos.toString(), icon: CheckSquare, color: 'text-blue-400', bg: 'bg-blue-500/20', gradient: 'from-blue-500/20 to-blue-600/10', border: 'border-blue-500/20' },
-    { label: '平均项目进度', value: `${stats.avgProjectProgress}%`, icon: TrendingUp, color: 'text-green-400', bg: 'bg-green-500/20', gradient: 'from-green-500/20 to-green-600/10', border: 'border-green-500/20' },
-    { label: '习惯打卡次数', value: `${stats.habitStreak} 次`, icon: Award, color: 'text-purple-400', bg: 'bg-purple-500/20', gradient: 'from-purple-500/20 to-purple-600/10', border: 'border-purple-500/20' },
-    { label: '日程事件数', value: stats.todayEvents.toString(), icon: Calendar, color: 'text-orange-400', bg: 'bg-orange-500/20', gradient: 'from-orange-500/20 to-orange-600/10', border: 'border-orange-500/20' },
+    { id: 'completed', label: '任务完成数', value: stats.completedTodos.toString(), icon: CheckSquare, color: 'text-blue-400', bg: 'bg-blue-500/20', gradient: 'from-blue-500/20 to-blue-600/10', border: 'border-blue-500/20' },
+    { id: 'progress', label: '平均项目进度', value: `${stats.avgProjectProgress}%`, icon: TrendingUp, color: 'text-green-400', bg: 'bg-green-500/20', gradient: 'from-green-500/20 to-green-600/10', border: 'border-green-500/20' },
+    { id: 'streak', label: '习惯打卡次数', value: `${stats.habitStreak} 次`, icon: Award, color: 'text-purple-400', bg: 'bg-purple-500/20', gradient: 'from-purple-500/20 to-purple-600/10', border: 'border-purple-500/20' },
+    { id: 'events', label: '日程事件数', value: stats.todayEvents.toString(), icon: Calendar, color: 'text-orange-400', bg: 'bg-orange-500/20', gradient: 'from-orange-500/20 to-orange-600/10', border: 'border-orange-500/20' },
   ];
 
   return (
@@ -33,12 +37,12 @@ export function Achievements() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, i) => (
           <motion.div
-            key={i}
+            key={stat.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
           >
-            <GlassCard variant="glow" delay={i * 0.1} className="p-5 flex items-center gap-4">
+            <GlassCard variant="glow" delay={i * 0.1} accentColor={accentHex} className="p-5 flex items-center gap-4">
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 10 }}
                 className={`p-3 rounded-xl bg-gradient-to-br ${stat.gradient} border ${stat.border}`}
@@ -61,21 +65,22 @@ export function Achievements() {
           成就徽章
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { name: '初次使用', desc: '欢迎来到 Explore OS', icon: Star, color: 'from-blue-400 to-cyan-400', unlocked: true },
-            { name: '任务达人', desc: '完成10个任务', icon: CheckSquare, color: 'from-green-400 to-emerald-400', unlocked: stats.completedTodos >= 10 },
-            { name: '项目先锋', desc: '项目进度达到50%', icon: Target, color: 'from-purple-400 to-pink-400', unlocked: stats.avgProjectProgress >= 50 },
-            { name: '习惯大师', desc: '本周打卡7天', icon: Award, color: 'from-amber-400 to-orange-400', unlocked: stats.habitStreak >= 7 },
+          {[ 
+            { id: 'welcome', name: '初次使用', desc: '欢迎来到 Explore OS', icon: Star, color: 'from-blue-400 to-cyan-400', unlocked: true },
+            { id: 'task-master', name: '任务达人', desc: '完成10个任务', icon: CheckSquare, color: 'from-green-400 to-emerald-400', unlocked: stats.completedTodos >= 10 },
+            { id: 'project-pioneer', name: '项目先锋', desc: '项目进度达到50%', icon: Target, color: 'from-purple-400 to-pink-400', unlocked: stats.avgProjectProgress >= 50 },
+            { id: 'habit-master', name: '习惯大师', desc: '本周打卡7天', icon: Award, color: 'from-amber-400 to-orange-400', unlocked: stats.habitStreak >= 7 },
           ].map((badge, i) => (
             <motion.div
-              key={i}
+              key={badge.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 + i * 0.1 }}
             >
               <GlassCard 
-                variant={badge.unlocked ? 'glow' : 'default'} 
+                variant={badge.unlocked ? 'glow' : 'default'}
                 delay={0.4 + i * 0.1}
+                accentColor={accentHex}
                 className={`p-5 flex flex-col items-center justify-center text-center gap-3 ${!badge.unlocked && 'opacity-50'}`}
               >
                 <motion.div 
@@ -99,7 +104,7 @@ export function Achievements() {
 
       {/* Sub-modules */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GlassCard variant="glow" delay={0.7} className="p-6 flex flex-col items-center justify-center text-center space-y-4 border-t-4 border-t-blue-500">
+          <GlassCard variant="glow" delay={0.7} accentColor={accentHex} className="p-6 flex flex-col items-center justify-center text-center space-y-4 border-t-4 border-t-blue-500">
              <motion.div 
                whileHover={{ scale: 1.1, rotate: -10 }}
                className="p-4 rounded-full bg-blue-500/10 text-blue-400"
@@ -127,7 +132,7 @@ export function Achievements() {
              </p>
           </GlassCard>
 
-          <GlassCard variant="glow" delay={0.9} className="p-6 flex flex-col items-center justify-center text-center space-y-4 border-t-4 border-t-orange-500">
+          <GlassCard variant="glow" delay={0.9} accentColor={accentHex} className="p-6 flex flex-col items-center justify-center text-center space-y-4 border-t-4 border-t-orange-500">
              <motion.div 
                whileHover={{ scale: 1.1, rotate: -10 }}
                className="p-4 rounded-full bg-orange-500/10 text-orange-400"

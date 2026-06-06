@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/GlassCard';
 import { Timer, Play, Pause, RotateCcw, SkipForward, Settings2, BarChart3, Clock, CheckCircle2 } from 'lucide-react';
@@ -15,7 +15,7 @@ export function Pomodoro() {
   const [showSettings, setShowSettings] = useState(false);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
   const todaySessions = pomodoroSessions.filter(s => s.date === todayStr && s.type === 'work');
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export function Pomodoro() {
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
-              className="transition-all duration-1000"
+              className="transition-[stroke-dashoffset] duration-1000"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -175,9 +175,10 @@ export function Pomodoro() {
       <AnimatePresence>
         {showSettings && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={{ scaleY: 1, opacity: 1 }}
+            exit={{ scaleY: 0, opacity: 0 }}
+            style={{ transformOrigin: 'top' }}
             className="overflow-hidden"
           >
             <GlassCard variant="paper" className="p-6">

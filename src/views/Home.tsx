@@ -143,7 +143,7 @@ export function Home({ onNavigate }: HomeProps) {
             const Icon = item.icon;
             return (
               <GlassCard
-                key={i}
+                key={item.view}
                 onClick={() => onNavigate(item.view)}
                 variant="paper"
                 className={`flex flex-col items-center justify-center gap-2 cursor-pointer ${isMobile ? 'p-3 h-24' : 'p-4 h-28'}`}

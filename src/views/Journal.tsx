@@ -8,7 +8,11 @@ import { zhCN } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function Journal() {
-  const { habits, toggleHabit, addHabit, timeline, addTimelineEntry, weeklyCheckins, toggleWeeklyCheckin } = useData();
+  const { habits, toggleHabit, addHabit, timeline, addTimelineEntry, weeklyCheckins, toggleWeeklyCheckin, settings } = useData();
+  
+  const accentHex = {
+    teal: '#14b8a6', blue: '#3b82f6', purple: '#a855f7', orange: '#f97316', green: '#22c55e', pink: '#ec4899'
+  }[settings.accentColor] || '#14b8a6';
   
   const [time, setTime] = useState("");
   const [title, setTitle] = useState("");
@@ -48,7 +52,7 @@ export function Journal() {
         {/* Left Column - Mood & Timeline */}
         <div className="space-y-6">
             {/* Today's Mood */}
-            <GlassCard variant="glow" delay={0.1} className="p-6 flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-pink-500/10 to-purple-500/10 border-pink-500/20">
+            <GlassCard variant="glow" delay={0.1} accentColor={accentHex} className="p-6 flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-pink-500/10 to-purple-500/10 border-pink-500/20">
                 <h3 className="text-lg font-semibold text-pink-200">今日心情</h3>
                 <div className="flex gap-4">
                   {['😊', '😌', '😔'].map((emoji, i) => (
@@ -70,15 +74,15 @@ export function Journal() {
                 />
             </GlassCard>
 
-             <GlassCard variant="glow" delay={0.2} className="p-6 h-[400px] flex flex-col">
+             <GlassCard variant="glow" delay={0.2} accentColor={accentHex} className="p-6 h-[400px] flex flex-col">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-semibold text-white flex items-center gap-2">
                       <Coffee size={20} className="text-pink-400" />
                       时间轴
                     </h3>
                     <div className="flex gap-2">
-                         <input value={time} onChange={e=>setTime(e.target.value)} type="time" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm focus:outline-none focus:border-pink-400 transition-all" />
-                         <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="事件" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm w-24 focus:outline-none focus:border-pink-400 transition-all" />
+                         <input value={time} onChange={e=>setTime(e.target.value)} type="time" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus:border-pink-400 transition-all" />
+                         <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="事件" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm w-24 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus:border-pink-400 transition-all" />
                          <motion.button 
                            whileHover={{ scale: 1.1 }}
                            whileTap={{ scale: 0.9 }}
@@ -91,11 +95,11 @@ export function Journal() {
                 </div>
                 
                 <div className="relative border-l-2 border-white/10 ml-3 space-y-8 overflow-y-auto pr-2 flex-1">
-                    {timeline.length === 0 && <p className="text-slate-500 text-sm italic pl-8">暂无记录，添加你的第一个时刻吧。</p>}
+                    {timeline.length === 0 && <p className="text-slate-500 text-sm italic pl-8 py-4">暂无记录，添加你的第一个时刻吧。</p>}
                     <AnimatePresence mode="popLayout">
                     {timeline.map((item, idx) => (
                         <motion.div 
-                          key={idx} 
+                          key={`${item.time}-${item.title}-${idx}`} 
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 20 }}
@@ -115,7 +119,7 @@ export function Journal() {
 
         {/* Right Column - Weekly & Habits */}
         <div className="space-y-6">
-             <GlassCard variant="glow" delay={0.3} className="p-6">
+             <GlassCard variant="glow" delay={0.3} accentColor={accentHex} className="p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Star size={18} className="text-amber-400" />
                   本周打卡
@@ -154,14 +158,14 @@ export function Journal() {
                 <p className="text-xs text-slate-500 mt-4 text-center">只能进行当日打卡，保持连续性！</p>
             </GlassCard>
 
-            <GlassCard variant="glow" delay={0.4} className="p-6">
+            <GlassCard variant="glow" delay={0.4} accentColor={accentHex} className="p-6">
                 <div className="flex justify-between items-center mb-4">
                      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                        <Heart size={18} className="text-red-400" />
                        每日习惯清单
                      </h3>
                      <div className="flex gap-2">
-                        <input value={newHabit} onChange={e=>setNewHabit(e.target.value)} placeholder="新习惯…" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-green-400 transition-all" />
+                        <input value={newHabit} onChange={e=>setNewHabit(e.target.value)} placeholder="新习惯…" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus:border-green-400 transition-all" />
                         <motion.button 
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
@@ -174,7 +178,7 @@ export function Journal() {
                 </div>
                 
                 <div className="space-y-3">
-                    {habits.length === 0 && <p className="text-slate-500 text-sm">暂无习惯。</p>}
+                    {habits.length === 0 && <p className="text-slate-500 text-sm py-4">暂无习惯。</p>}
                     <AnimatePresence mode="popLayout">
                     {habits.map((habit, idx) => (
                          <motion.div 

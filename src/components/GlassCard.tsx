@@ -9,9 +9,10 @@ interface GlassCardProps {
   variant?: 'default' | 'elevated' | 'outlined' | 'glow' | 'paper' | 'minimal';
   delay?: number;
   onClick?: () => void;
+  accentColor?: string;
 }
 
-export function GlassCard({ children, className, hoverEffect = true, variant = 'default', delay = 0, onClick, ...props }: GlassCardProps) {
+export function GlassCard({ children, className, hoverEffect = true, variant = 'default', delay = 0, onClick, accentColor, ...props }: GlassCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -38,7 +39,10 @@ export function GlassCard({ children, className, hoverEffect = true, variant = '
       {...props}
     >
       {variant === 'glow' && (
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 via-transparent to-emerald-500/5 pointer-events-none" />
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: `linear-gradient(to bottom right, ${accentColor || '#14b8a6'}10, transparent, ${accentColor || '#14b8a6'}08)` }}
+        />
       )}
       <div className={cn("relative z-10", variant === 'minimal' && "p-0")}>
         {children}

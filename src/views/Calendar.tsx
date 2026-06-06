@@ -59,14 +59,8 @@ export function CalendarView() {
 
   const handleSaveEdit = () => {
     if (!editingEvent || !editTitle.trim() || typeof editingEvent.id === 'string') return;
-    const newDate = new Date(editingEvent.start);
-    newDate.setHours(9, 0, 0, 0);
-    const endDate = new Date(editingEvent.start);
-    endDate.setHours(10, 0, 0, 0);
     updateEvent(editingEvent.id as number, {
       title: editTitle.trim(),
-      start: newDate,
-      end: endDate,
       color: editColor,
       note: editNote,
     });
@@ -226,7 +220,7 @@ export function CalendarView() {
                 ))}
                 </AnimatePresence>
                 {todaysEvents.length === 0 && (
-                    <p className="text-xs text-slate-600 py-4 text-center">无日程</p>
+                    <p className="text-xs text-slate-600 py-8 text-center">无日程</p>
                 )}
              </div>
         </div>
@@ -304,7 +298,7 @@ export function CalendarView() {
                         
                         <div className="w-full flex flex-col gap-0.5 mt-0.5">
                             {dayEvents.slice(0, 3).map((e, idx) => (
-                                <div key={idx} className="h-1 w-full rounded-full" style={{ backgroundColor: e.color }} />
+                                <div key={`${e.color}-${idx}`} className="h-1 w-full rounded-full" style={{ backgroundColor: e.color }} />
                             ))}
                             {dayEvents.length > 3 && (
                                 <span className="text-[7px] md:text-[8px] text-slate-500">+{dayEvents.length - 3}</span>
@@ -352,7 +346,7 @@ export function CalendarView() {
                   <input
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -382,7 +376,7 @@ export function CalendarView() {
                   <textarea
                     value={editNote}
                     onChange={(e) => setEditNote(e.target.value)}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm h-20 resize-none focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm h-20 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="flex gap-2 pt-2">

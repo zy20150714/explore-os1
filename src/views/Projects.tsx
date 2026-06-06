@@ -300,10 +300,10 @@ export function Projects() {
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="md:col-span-2 text-center py-16 text-slate-500"
+              className="md:col-span-2 text-center py-12 text-slate-500"
             >
-              <Briefcase size={40} className="mx-auto mb-3 text-slate-600" />
-              <p>暂无长期项目，点击右上角新建。</p>
+              <Briefcase size={48} className="mx-auto mb-3 text-slate-600" />
+              <p className="text-sm">暂无长期项目，点击右上角新建。</p>
             </motion.div>
         )}
       </div>
@@ -376,7 +376,7 @@ export function Projects() {
                 type="date"
                 value={customDate}
                 onChange={(e) => setCustomDate(e.target.value)}
-                className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white mb-6 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white mb-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus:border-purple-500"
                 min={projects.find(p => p.id === customCheckinId)?.startDate}
                 max={new Date().toISOString().split('T')[0]}
               />
