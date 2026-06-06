@@ -303,7 +303,8 @@ export function Projects() {
               className="md:col-span-2 text-center py-12 text-slate-500"
             >
               <Briefcase size={48} className="mx-auto mb-3 text-slate-600" />
-              <p className="text-sm">暂无长期项目，点击右上角新建。</p>
+              <p className="text-sm">暂无长期项目</p>
+              <p className="text-slate-600 text-xs mt-1">点击右上角「+ 新建项目」创建你的第一个长期项目</p>
             </motion.div>
         )}
       </div>

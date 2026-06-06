@@ -49,6 +49,9 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     dark: '深邃模式',
     warm: '暖色模式',
     ocean: '海洋模式',
+    light: '明亮模式',
+    cream: '奶油模式',
+    mint: '薄荷模式',
   };
 
   return (
@@ -167,7 +170,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
 
         <button
           onClick={() => {
-            const modes = ['glass', 'normal', 'dark', 'warm', 'ocean'] as const;
+            const modes = ['glass', 'normal', 'dark', 'warm', 'ocean', 'light', 'cream', 'mint'] as const;
             const currentIdx = modes.indexOf(settings.themeMode);
             const nextMode = modes[(currentIdx + 1) % modes.length];
             updateSettings({ themeMode: nextMode });

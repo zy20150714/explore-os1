@@ -30,7 +30,7 @@ export function Layout({ children, currentView, onChangeView }: LayoutProps) {
     <div className={`flex h-screen w-full overflow-hidden ${fontClass} relative`}>
       <Sidebar currentView={currentView} onChangeView={onChangeView} />
       
-      <main className={`flex-1 h-full overflow-y-auto overflow-x-hidden relative z-10 ${densityPadding} scroll-smooth`}>
+      <main id="main-content" aria-label="主内容区" className={`flex-1 h-full overflow-y-auto overflow-x-hidden relative z-10 ${densityPadding} scroll-smooth`}>
         <div className="max-w-7xl mx-auto h-full">
            {children}
         </div>

@@ -49,7 +49,7 @@ export interface PomodoroSession {
   type: 'work' | 'break';
 }
 
-export type ThemeMode = 'glass' | 'normal' | 'dark' | 'warm' | 'ocean';
+export type ThemeMode = 'glass' | 'normal' | 'dark' | 'warm' | 'ocean' | 'light' | 'cream' | 'mint';
 export type AccentColor = 'teal' | 'blue' | 'purple' | 'orange' | 'green' | 'pink';
 export type DensityMode = 'compact' | 'standard' | 'spacious';
 export type FontSizeMode = 'small' | 'medium' | 'large';
@@ -62,7 +62,9 @@ interface UserSettings {
   fontSizeMode: FontSizeMode;
   wallpaperMode: WallpaperMode;
   wallpaperOpacity: number;
-  customWallpaper?: string;
+  customWallpaperUrl?: string;
+  cookieExpiryDays: number;
+  onboardingCompleted: boolean;
 }
 
 interface DataContextType {
@@ -113,6 +115,7 @@ interface DataContextType {
 
   cookieExpiryDays: number;
   setCookieExpiryDays: (days: number) => void;
+  resetOnboarding: () => void;
 
   pomodoroSessions: PomodoroSession[];
   addPomodoroSession: (session: Omit<PomodoroSession, 'id'>) => void;
@@ -145,8 +148,10 @@ const DEFAULT_SETTINGS: UserSettings = {
   accentColor: 'teal',
   densityMode: 'standard',
   fontSizeMode: 'medium',
-  wallpaperMode: 'fluid',
-  wallpaperOpacity: 1,
+  wallpaperMode: 'gradient',
+  wallpaperOpacity: 0.3,
+  cookieExpiryDays: 3650,
+  onboardingCompleted: false,
 };
 
 export function DataProvider({ children }: { children: ReactNode }) {
@@ -158,10 +163,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   });
   const [habits, setHabits] = useState<Habit[]>(() => {
     const saved = loadObjectFromCookie('explore_os_habits');
-    return saved || [
-      { id: '1', name: '喝水 2L', completed: false },
-      { id: '2', name: '阅读 30 分钟', completed: false },
-    ];
+    return saved || [];
   });
   const [timeline, setTimeline] = useState<JournalEntry[]>(() => loadObjectFromCookie('explore_os_timeline') || []);
   const [weeklyCheckins, setWeeklyCheckins] = useState<boolean[]>(() => loadObjectFromCookie('explore_os_checkins') || [false, false, false, false, false, false, false]);
@@ -435,6 +437,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       settings, updateSettings,
       installedApps, installApp, uninstallApp,
       cookieExpiryDays, setCookieExpiryDays,
+      resetOnboarding: () => updateSettings({ onboardingCompleted: false }),
       pomodoroSessions, addPomodoroSession, clearPomodoroHistory,
       hasUnsavedChanges,
       clearAllData, exportData, importData,

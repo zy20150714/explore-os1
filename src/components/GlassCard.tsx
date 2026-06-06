@@ -12,6 +12,15 @@ interface GlassCardProps {
   accentColor?: string;
 }
 
+const variantStyles: Record<string, string> = {
+    default: 'bg-[var(--card-bg)] border border-[var(--border-color)] shadow-sm',
+    elevated: 'bg-[var(--card-bg)] border border-[var(--border-color)] shadow-lg',
+    outlined: 'bg-transparent border-2 border-[var(--border-color)]',
+    glow: 'bg-[var(--card-bg)] border border-[var(--border-color)] shadow-md',
+    paper: 'bg-[var(--card-bg)] border border-[var(--border-color)] shadow-sm',
+    minimal: 'bg-transparent border-none shadow-none',
+  };
+
 export function GlassCard({ children, className, hoverEffect = true, variant = 'default', delay = 0, onClick, accentColor, ...props }: GlassCardProps) {
   return (
     <motion.div
@@ -22,17 +31,7 @@ export function GlassCard({ children, className, hoverEffect = true, variant = '
       onClick={onClick}
       className={cn(
         "rounded-2xl p-5 overflow-hidden relative",
-        variant === 'elevated'
-          ? "bg-slate-800 border border-slate-700/50 shadow-lg shadow-black/20"
-          : variant === 'outlined'
-            ? "bg-transparent border border-slate-600/50"
-            : variant === 'glow'
-              ? "bg-slate-800/80 border border-slate-700/50 shadow-lg"
-              : variant === 'paper'
-                ? "bg-slate-800 border border-slate-700/30 shadow-sm"
-                : variant === 'minimal'
-                  ? "bg-transparent"
-                  : "bg-slate-800 border border-slate-700/30 shadow-sm",
+        variantStyles[variant],
         hoverEffect && "hover:border-slate-600/50 transition-colors duration-200 cursor-pointer",
         className
       )}

@@ -14,6 +14,8 @@ import { SettingsView } from "@/views/Settings";
 import { GlassCard } from "@/components/GlassCard";
 import { Grid, Puzzle, Globe, Cloud, Zap, Shield, Timer, Download, Trash2 } from "lucide-react";
 import { DataProvider, useData } from "@/context/DataProvider";
+import { Onboarding } from "@/components/Onboarding";
+import { CommandPalette } from "@/components/CommandPalette";
 
 const THEME_BACKGROUNDS: Record<string, string> = {
   glass: 'bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900',
@@ -21,16 +23,44 @@ const THEME_BACKGROUNDS: Record<string, string> = {
   dark: 'bg-gradient-to-br from-black via-gray-900 to-black',
   warm: 'bg-gradient-to-br from-amber-950 via-orange-950 to-stone-900',
   ocean: 'bg-gradient-to-br from-blue-950 via-cyan-950 to-teal-900',
+  light: 'bg-gradient-to-br from-slate-50 via-white to-slate-100',
+  cream: 'bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50',
+  mint: 'bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50',
 };
 
 function AppContent() {
   const { installApp, uninstallApp, installedApps, settings } = useData();
   const [currentView, setCurrentView] = useState<ViewType>('home');
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
 
   useEffect(() => {
-    const darkThemes = ['glass', 'dark', 'ocean'];
+    const darkThemes = ['glass', 'dark', 'ocean', 'warm', 'normal'];
     document.documentElement.style.colorScheme = darkThemes.includes(settings.themeMode) ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', settings.themeMode);
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', darkThemes.includes(settings.themeMode) ? '#020617' : '#f8fafc');
+    }
   }, [settings.themeMode]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowCommandPalette(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (!settings.onboardingCompleted) {
+      const timer = setTimeout(() => setShowOnboarding(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [settings.onboardingCompleted]);
 
   const handleInstall = useCallback((appId: string) => {
     installApp(appId);
@@ -43,10 +73,10 @@ function AppContent() {
   const bgClass = THEME_BACKGROUNDS[settings.themeMode] || THEME_BACKGROUNDS.glass;
 
   const renderBackground = () => {
-    if (settings.wallpaperMode === 'custom' && settings.customWallpaper) {
+    if (settings.wallpaperMode === 'custom' && settings.customWallpaperUrl) {
       return (
         <div className="fixed inset-0 z-0" style={{ opacity: settings.wallpaperOpacity }}>
-          <img src={settings.customWallpaper} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+          <img src={settings.customWallpaperUrl} alt="" className="w-full h-full object-cover" aria-hidden="true" />
         </div>
       );
     }
@@ -136,8 +166,14 @@ function AppContent() {
 
   return (
     <div className={bgClass}>
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-teal-600 focus:text-white focus:rounded-lg"
+      >
+        跳转到主内容
+      </a>
       {renderBackground()}
-      <div className="relative z-10 min-h-screen">
+      <div className="relative z-10 min-h-screen">...
         <Layout currentView={currentView} onChangeView={setCurrentView}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -152,6 +188,13 @@ function AppContent() {
           </AnimatePresence>
         </Layout>
       </div>
+      {showOnboarding && <Onboarding onClose={() => setShowOnboarding(false)} />}
+      {showCommandPalette && (
+        <CommandPalette 
+          onNavigate={(view) => setCurrentView(view)} 
+          onClose={() => setShowCommandPalette(false)} 
+        />
+      )}
     </div>
   );
 }

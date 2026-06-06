@@ -212,10 +212,19 @@ export function Todo() {
                 >
                   <button
                     onClick={() => toggleTodo(todo.id)}
-                    aria-label={`标记 "${todo.text}" 为完成`}
-                    className="group w-5 h-5 rounded-full border-2 border-slate-500 hover:border-teal-400 hover:bg-teal-600/20 flex items-center justify-center transition-all shrink-0"
+                    aria-label={todo.completed ? `取消完成 "${todo.text}"` : `标记 "${todo.text}" 为完成`}
+                    className={cn(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                      todo.completed
+                        ? "bg-green-500 border-green-500 text-white"
+                        : "border-slate-400 hover:border-teal-400 hover:bg-teal-500/20"
+                    )}
                   >
-                    <Check size={10} strokeWidth={3} className="text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {todo.completed ? (
+                      <Check size={10} strokeWidth={3} />
+                    ) : (
+                      <Check size={10} strokeWidth={2} className="text-slate-500 opacity-40" />
+                    )}
                   </button>
                   <div className="flex-1 min-w-0">
                     <span className="text-slate-200 truncate block">{todo.text}</span>
@@ -250,6 +259,7 @@ export function Todo() {
           >
             <ClipboardList size={40} className="mx-auto mb-3 text-slate-600" />
             <p>暂无待办任务</p>
+            <p className="text-slate-600 text-xs mt-1">输入任务名称，按回车即可添加</p>
           </motion.div>
         )}
       </div>

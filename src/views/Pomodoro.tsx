@@ -199,7 +199,7 @@ export function Pomodoro() {
                         if (mode === 'work' && !isRunning) setTimeLeft(val * 60);
                       }
                     }}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500 transition-colors"
+                    className="w-20 bg-slate-700/50 border border-slate-600/50 rounded-lg px-2 py-1.5 text-white text-sm text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -217,7 +217,7 @@ export function Pomodoro() {
                         if (mode === 'break' && !isRunning) setTimeLeft(val * 60);
                       }
                     }}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500 transition-colors"
+                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus:border-teal-500 transition-colors"
                   />
                 </div>
               </div>

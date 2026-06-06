@@ -5,11 +5,14 @@ import { Settings, Cookie, Download, Upload, Trash2, Shield, Palette, Database, 
 import { useData, ThemeMode, AccentColor, DensityMode, FontSizeMode, WallpaperMode } from '@/context/DataProvider';
 
 const THEME_MODES = [
-  { id: 'glass' as ThemeMode, label: '玻璃模式', icon: 'glass', color: 'from-teal-500 to-cyan-500' },
-  { id: 'normal' as ThemeMode, label: '简约模式', icon: 'paper', color: 'from-slate-500 to-slate-600' },
-  { id: 'dark' as ThemeMode, label: '深邃模式', icon: 'dark', color: 'from-gray-800 to-black' },
-  { id: 'warm' as ThemeMode, label: '暖色模式', icon: 'warm', color: 'from-amber-500 to-orange-500' },
-  { id: 'ocean' as ThemeMode, label: '海洋模式', icon: 'ocean', color: 'from-blue-600 to-cyan-600' },
+  { id: 'glass' as ThemeMode, label: '玻璃模式', icon: 'glass', color: 'from-teal-500 to-cyan-500', dark: true },
+  { id: 'normal' as ThemeMode, label: '简约模式', icon: 'paper', color: 'from-slate-500 to-slate-600', dark: true },
+  { id: 'dark' as ThemeMode, label: '深邃模式', icon: 'dark', color: 'from-gray-800 to-black', dark: true },
+  { id: 'warm' as ThemeMode, label: '暖色模式', icon: 'warm', color: 'from-amber-500 to-orange-500', dark: true },
+  { id: 'ocean' as ThemeMode, label: '海洋模式', icon: 'ocean', color: 'from-blue-600 to-cyan-600', dark: true },
+  { id: 'light' as ThemeMode, label: '明亮模式', icon: 'light', color: 'from-slate-50 to-white', dark: false },
+  { id: 'cream' as ThemeMode, label: '奶油模式', icon: 'cream', color: 'from-amber-50 to-orange-50', dark: false },
+  { id: 'mint' as ThemeMode, label: '薄荷模式', icon: 'mint', color: 'from-emerald-50 to-teal-50', dark: false },
 ];
 
 const ACCENT_COLORS = [
@@ -80,7 +83,7 @@ export function SettingsView() {
     a.click();
     URL.revokeObjectURL(url);
     setExportResult(true);
-    setTimeout(() => setExportResult(false), 2000);
+    exportTimerRef.current = setTimeout(() => setExportResult(false), 2000);
   };
 
   const handleImport = () => {
@@ -102,7 +105,7 @@ export function SettingsView() {
     setUploadingWallpaper(true);
     const reader = new FileReader();
     reader.onload = () => {
-      updateSettings({ customWallpaper: reader.result as string, wallpaperMode: 'custom' });
+      updateSettings({ customWallpaperUrl: reader.result as string, wallpaperMode: 'custom' });
       setUploadingWallpaper(false);
     };
     reader.readAsDataURL(file);
@@ -226,7 +229,7 @@ export function SettingsView() {
                     max="36500"
                     value={customDays}
                     onChange={(e) => setCustomDays(e.target.value)}
-                    className="w-24 md:w-32 bg-slate-700/50 border border-slate-600/50 rounded-lg px-2 md:px-3 py-2 text-white text-xs md:text-sm focus:outline-none focus:border-teal-500 transition-colors"
+                    className="w-24 md:w-32 bg-slate-700/50 border border-slate-600/50 rounded-lg px-2 md:px-3 py-2 text-white text-xs md:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus:border-teal-500 transition-colors"
                   />
                   <span className="text-xs md:text-sm text-slate-500">天</span>
                   <button
@@ -283,9 +286,9 @@ export function SettingsView() {
                       {PRESET_WALLPAPERS.map((wp) => (
                         <button
                           key={wp.url}
-                          onClick={() => updateSettings({ customWallpaper: wp.url })}
+                          onClick={() => updateSettings({ wallpaperMode: 'custom', customWallpaperUrl: wp.url })}
                           className={`relative rounded-xl overflow-hidden border-2 transition-all ${
-                            settings.customWallpaper === wp.url ? 'border-teal-500' : 'border-transparent hover:border-slate-500'
+                            settings.customWallpaperUrl === wp.url ? 'border-teal-500' : 'border-transparent hover:border-slate-500'
                           }`}
                         >
                           <img src={wp.url} alt={wp.name} width="480" height="270" className="w-full h-20 md:h-24 object-cover" loading="lazy" />
@@ -513,6 +516,14 @@ export function SettingsView() {
                   <p className="text-xs text-slate-600 mt-1">
                     AI 辅助开发 · 提升开发效率 · 持续优化中
                   </p>
+                </div>
+                <div className="pt-3 border-t border-slate-700/50">
+                  <button
+                    onClick={() => { updateSettings({ onboardingCompleted: false }); alert('下次刷新时将再次显示新手引导。'); }}
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs transition-colors"
+                  >
+                    <Download size={14} className="rotate-180" /> 重新查看新手引导
+                  </button>
                 </div>
               </div>
             </GlassCard>

@@ -81,8 +81,8 @@ export function Journal() {
                       时间轴
                     </h3>
                     <div className="flex gap-2">
-                         <input value={time} onChange={e=>setTime(e.target.value)} type="time" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus:border-pink-400 transition-all" />
-                         <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="事件" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm w-24 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus:border-pink-400 transition-all" />
+                         <input value={time} onChange={e=>setTime(e.target.value)} type="time" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus:border-pink-400 transition-[border-color,box-shadow]" />
+                         <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="事件" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm w-24 focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus:border-pink-400 transition-[border-color,box-shadow]" />
                          <motion.button 
                            whileHover={{ scale: 1.1 }}
                            whileTap={{ scale: 0.9 }}
@@ -165,7 +165,7 @@ export function Journal() {
                        每日习惯清单
                      </h3>
                      <div className="flex gap-2">
-                        <input value={newHabit} onChange={e=>setNewHabit(e.target.value)} placeholder="新习惯…" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus:border-green-400 transition-all" />
+                        <input value={newHabit} onChange={e=>setNewHabit(e.target.value)} placeholder="新习惯…" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus:border-green-400 transition-[border-color,box-shadow]" />
                         <motion.button 
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}

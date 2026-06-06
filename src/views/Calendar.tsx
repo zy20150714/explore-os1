@@ -220,7 +220,10 @@ export function CalendarView() {
                 ))}
                 </AnimatePresence>
                 {todaysEvents.length === 0 && (
-                    <p className="text-xs text-slate-600 py-8 text-center">无日程</p>
+                    <div className="py-8 text-center">
+                      <p className="text-xs text-slate-600">无日程</p>
+                      <p className="text-slate-600 text-[10px] mt-0.5">点击任意日期，创建日程安排</p>
+                    </div>
                 )}
              </div>
         </div>

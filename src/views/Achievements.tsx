@@ -119,7 +119,7 @@ export function Achievements() {
              </p>
           </GlassCard>
 
-          <GlassCard variant="glow" delay={0.8} className="p-6 flex flex-col items-center justify-center text-center space-y-4 border-t-4 border-t-pink-500">
+          <GlassCard variant="glow" delay={0.8} accentColor={accentHex} className="p-6 flex flex-col items-center justify-center text-center space-y-4 border-t-4 border-t-pink-500">
              <motion.div 
                whileHover={{ scale: 1.1, rotate: 10 }}
                className="p-4 rounded-full bg-pink-500/10 text-pink-400"
