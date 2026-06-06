@@ -51,11 +51,12 @@ export function Journal() {
             <GlassCard variant="glow" delay={0.1} className="p-6 flex flex-col items-center justify-center text-center space-y-4 bg-gradient-to-br from-pink-500/10 to-purple-500/10 border-pink-500/20">
                 <h3 className="text-lg font-semibold text-pink-200">今日心情</h3>
                 <div className="flex gap-4">
-                  {['😊', '😄', '🥰', '😌', '😔', '😤'].map((emoji, i) => (
+                  {['😊', '😌', '😔'].map((emoji, i) => (
                     <motion.button
                       key={i}
                       whileHover={{ scale: 1.3 }}
                       whileTap={{ scale: 0.9 }}
+                      aria-label={['开心', '平静', '低落'][i]}
                       className="text-4xl cursor-pointer"
                     >
                       {emoji}
@@ -64,7 +65,7 @@ export function Journal() {
                 </div>
                 <input 
                     type="text" 
-                    placeholder="写下你的心情..." 
+                    placeholder="写下你的心情…" 
                     className="bg-transparent text-center text-slate-300 italic w-full focus:outline-none border-b border-transparent focus:border-pink-300/30 transition-all" 
                 />
             </GlassCard>
@@ -160,7 +161,7 @@ export function Journal() {
                        每日习惯清单
                      </h3>
                      <div className="flex gap-2">
-                        <input value={newHabit} onChange={e=>setNewHabit(e.target.value)} placeholder="新习惯..." className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-green-400 transition-all" />
+                        <input value={newHabit} onChange={e=>setNewHabit(e.target.value)} placeholder="新习惯…" className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-green-400 transition-all" />
                         <motion.button 
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}

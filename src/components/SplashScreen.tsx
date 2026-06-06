@@ -94,7 +94,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           transition={{ delay: 0.7 }}
           className="text-slate-400 text-sm font-light tracking-widest"
         >
-          {progress < 100 ? "系统初始化中..." : "准备就绪"}
+          {progress < 100 ? "系统初始化中…" : "准备就绪"}
         </motion.p>
 
         <motion.div

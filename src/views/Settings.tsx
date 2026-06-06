@@ -279,7 +279,7 @@ export function SettingsView() {
                             settings.customWallpaper === wp.url ? 'border-teal-500' : 'border-transparent hover:border-slate-500'
                           }`}
                         >
-                          <img src={wp.url} alt={wp.name} className="w-full h-20 md:h-24 object-cover" loading="lazy" />
+                          <img src={wp.url} alt={wp.name} width="480" height="270" className="w-full h-20 md:h-24 object-cover" loading="lazy" />
                           <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1.5 py-0.5 rounded">{wp.name}</span>
                         </button>
                       ))}
@@ -298,7 +298,7 @@ export function SettingsView() {
                       className="w-full py-2.5 border-2 border-dashed border-slate-600 rounded-xl text-slate-400 hover:text-white hover:border-slate-500 transition-colors text-sm flex items-center justify-center gap-2"
                     >
                       <Upload size={14} />
-                      {uploadingWallpaper ? '上传中...' : '上传自定义壁纸'}
+                      {uploadingWallpaper ? '上传中…' : '上传自定义壁纸'}
                     </button>
                   </div>
                 )}
@@ -419,7 +419,7 @@ export function SettingsView() {
               <textarea
                 value={importText}
                 onChange={(e) => setImportText(e.target.value)}
-                placeholder="粘贴 JSON 备份数据..."
+                placeholder="粘贴 JSON 备份数据…"
                 className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-xs md:text-sm h-24 resize-none focus:outline-none focus:border-teal-500 transition-colors font-mono"
               />
               <div className="flex gap-2 mt-3">

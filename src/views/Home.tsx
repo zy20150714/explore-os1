@@ -109,7 +109,7 @@ export function Home({ onNavigate }: HomeProps) {
           <GlassCard variant="paper" delay={0.3} className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-400 text-sm">日程总数</p>
+                <p className="text-slate-400 text-sm">今日日程</p>
                 <p className="text-2xl font-bold text-white mt-1 tabular-nums">{stats.todayEvents}</p>
               </div>
               <div className="p-2 rounded-lg bg-purple-600/20">

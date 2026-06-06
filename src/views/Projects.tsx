@@ -250,7 +250,6 @@ export function Projects() {
                       </div>
                       <div className="h-2 w-full bg-slate-700/50 rounded-full overflow-hidden">
                         <motion.div 
-                          initial={{ width: 0 }}
                           animate={{ width: `${project.progress}%` }}
                           transition={{ duration: 0.8, ease: "easeOut" }}
                           className="h-full bg-purple-600 rounded-full"
@@ -316,7 +315,7 @@ export function Projects() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overscroll-contain"
             onClick={() => setDeleteConfirmId(null)}
           >
             <motion.div
@@ -356,7 +355,7 @@ export function Projects() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overscroll-contain"
             onClick={() => { setCustomCheckinId(null); setCustomDate(""); }}
           >
             <motion.div

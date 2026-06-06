@@ -31,7 +31,7 @@ export function GlassCard({ children, className, hoverEffect = true, variant = '
                 ? "bg-slate-800 border border-slate-700/30 shadow-sm"
                 : variant === 'minimal'
                   ? "bg-transparent"
-                  : "bg-slate-800/60 border border-slate-700/50 shadow-md",
+                  : "bg-slate-800 border border-slate-700/30 shadow-sm",
         hoverEffect && "hover:border-slate-600/50 transition-colors duration-200 cursor-pointer",
         className
       )}

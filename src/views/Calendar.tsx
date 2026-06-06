@@ -127,8 +127,8 @@ export function CalendarView() {
                         onChange={(e) => setTitle(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleAddEvent()}
                         type="text" 
-                        placeholder="输入日程标题..."
-                        className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors text-xs md:text-sm" 
+                        placeholder="输入日程标题…"
+                        className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus:border-blue-500 transition-colors text-xs md:text-sm" 
                     />
                 </div>
                 
@@ -167,7 +167,7 @@ export function CalendarView() {
                         id="event-note"
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
-                        placeholder="添加备注..."
+                        placeholder="添加备注…"
                         className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white placeholder-slate-500 h-16 md:h-20 resize-none focus:outline-none focus:border-blue-500 transition-colors text-xs md:text-sm" 
                     />
                 </div>
@@ -322,7 +322,7 @@ export function CalendarView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overscroll-contain"
             onClick={() => setEditingEvent(null)}
           >
             <motion.div

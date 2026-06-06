@@ -43,6 +43,14 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
     return installedApps?.includes(item.id);
   });
 
+  const themeLabels: Record<string, string> = {
+    glass: '玻璃模式',
+    normal: '简约模式',
+    dark: '深邃模式',
+    warm: '暖色模式',
+    ocean: '海洋模式',
+  };
+
   return (
     <motion.aside 
       animate={{ width: collapsed ? 72 : 256 }}
@@ -178,7 +186,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
                 exit={{ opacity: 0 }}
                 className="text-sm"
               >
-                {settings.themeMode === 'glass' ? '简约模式' : '玻璃模式'}
+                {themeLabels[settings.themeMode] || '玻璃模式'}
               </motion.span>
             )}
           </AnimatePresence>
@@ -188,7 +196,7 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
           "text-center text-xs text-slate-600 pt-2",
           collapsed ? "text-[10px]" : "tracking-widest"
         )}>
-          {collapsed ? 'v3.1' : 'Explore OS v3.1'}
+          {collapsed ? 'v3.2' : 'Explore OS v3.2'}
         </div>
       </div>
     </motion.aside>

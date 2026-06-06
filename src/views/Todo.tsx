@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/GlassCard';
-import { Plus, Check, AlertCircle, Calendar, Trash2, Flag, Clock, ListChecks, X } from 'lucide-react';
+import { Plus, Check, AlertCircle, Calendar, Trash2, Flag, Clock, ListChecks, X, ClipboardList } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useData } from '@/context/DataProvider';
 
@@ -83,12 +83,12 @@ export function Todo() {
                     value={inputValue}
                     onChange={(e) => { setInputValue(e.target.value); if (e.target.value.trim()) setErrors(prev => ({ ...prev, text: undefined })); }}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddTodo()}
-                    placeholder="输入任务内容..."
+                    placeholder="输入任务内容…"
                     aria-invalid={!!errors.text}
                     aria-describedby={errors.text ? "todo-text-error" : undefined}
                     className={cn(
-                      "w-full bg-slate-700/50 border rounded-lg px-3 py-2.5 text-white placeholder-slate-500 focus:outline-none transition-colors",
-                      errors.text ? "border-red-500/50 focus:border-red-500" : "border-slate-600/50 focus:border-teal-500"
+                      "w-full bg-slate-700/50 border rounded-lg px-3 py-2.5 text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus:border-teal-500 transition-colors",
+                      errors.text ? "border-red-500/50 focus:border-red-500" : "border-slate-600/50"
                     )}
                   />
                   <AnimatePresence>
@@ -213,8 +213,10 @@ export function Todo() {
                   <button
                     onClick={() => toggleTodo(todo.id)}
                     aria-label={`标记 "${todo.text}" 为完成`}
-                    className="w-5 h-5 rounded-full border-2 border-slate-500 hover:border-teal-400 flex items-center justify-center transition-colors shrink-0"
-                  />
+                    className="group w-5 h-5 rounded-full border-2 border-slate-500 hover:border-teal-400 hover:bg-teal-600/20 flex items-center justify-center transition-all shrink-0"
+                  >
+                    <Check size={10} strokeWidth={3} className="text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
                   <div className="flex-1 min-w-0">
                     <span className="text-slate-200 truncate block">{todo.text}</span>
                     {todo.dueDate && (
@@ -246,7 +248,7 @@ export function Todo() {
             animate={{ opacity: 1 }}
             className="text-center py-12 text-slate-500"
           >
-            <Check size={40} className="mx-auto mb-3 text-slate-600" />
+            <ClipboardList size={40} className="mx-auto mb-3 text-slate-600" />
             <p>暂无待办任务</p>
           </motion.div>
         )}

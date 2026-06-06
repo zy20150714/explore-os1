@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SplashScreen } from "@/components/SplashScreen";
 import { Layout } from "@/components/Layout";
@@ -26,6 +26,11 @@ const THEME_BACKGROUNDS: Record<string, string> = {
 function AppContent() {
   const { installApp, uninstallApp, installedApps, settings } = useData();
   const [currentView, setCurrentView] = useState<ViewType>('home');
+
+  useEffect(() => {
+    const darkThemes = ['glass', 'dark', 'ocean'];
+    document.documentElement.style.colorScheme = darkThemes.includes(settings.themeMode) ? 'dark' : 'light';
+  }, [settings.themeMode]);
 
   const handleInstall = useCallback((appId: string) => {
     installApp(appId);

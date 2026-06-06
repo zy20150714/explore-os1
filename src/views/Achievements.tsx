@@ -65,7 +65,7 @@ export function Achievements() {
             { name: '初次使用', desc: '欢迎来到 Explore OS', icon: Star, color: 'from-blue-400 to-cyan-400', unlocked: true },
             { name: '任务达人', desc: '完成10个任务', icon: CheckSquare, color: 'from-green-400 to-emerald-400', unlocked: stats.completedTodos >= 10 },
             { name: '项目先锋', desc: '项目进度达到50%', icon: Target, color: 'from-purple-400 to-pink-400', unlocked: stats.avgProjectProgress >= 50 },
-            { name: '习惯大师', desc: '连续打卡7天', icon: Award, color: 'from-amber-400 to-orange-400', unlocked: stats.habitStreak >= 7 },
+            { name: '习惯大师', desc: '本周打卡7天', icon: Award, color: 'from-amber-400 to-orange-400', unlocked: stats.habitStreak >= 7 },
           ].map((badge, i) => (
             <motion.div
               key={i}
