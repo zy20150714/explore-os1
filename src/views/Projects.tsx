@@ -1,19 +1,22 @@
 import { GlassCard } from '@/components/GlassCard';
-import { Briefcase, Plus, Calendar, X, CheckCircle, Target } from 'lucide-react';
+import { Briefcase, Plus, Calendar, X, CheckCircle, Target, Trash2, AlertCircle, Clock } from 'lucide-react';
 import { useData } from '@/context/DataProvider';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils/cn';
-import { AlertCircle } from 'lucide-react';
 
 export function Projects() {
-  const { projects, addProject, checkInProject, canCheckInToday } = useData();
+  const { projects, addProject, deleteProject, checkInProject, canCheckInToday } = useData();
   const [showForm, setShowForm] = useState(false);
   
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [errors, setErrors] = useState<{ name?: string; startDate?: string; endDate?: string }>({});
+
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [customCheckinId, setCustomCheckinId] = useState<number | null>(null);
+  const [customDate, setCustomDate] = useState("");
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -41,6 +44,19 @@ export function Projects() {
   const isTodayChecked = (checkIns: string[]) => {
     const today = new Date().toISOString().split('T')[0];
     return checkIns.includes(today);
+  };
+
+  const handleCustomCheckin = (projectId: number) => {
+    if (!customDate) return;
+    const today = new Date().toISOString().split('T')[0];
+    if (customDate > today) return;
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+    if (customDate < project.startDate || customDate > project.endDate) return;
+    if (project.checkIns.includes(customDate)) return;
+    checkInProject(projectId, customDate);
+    setCustomCheckinId(null);
+    setCustomDate("");
   };
 
   return (
@@ -95,7 +111,9 @@ export function Projects() {
           </div>
           <div>
             <p className="text-2xl font-bold text-white">
-              {projects.length > 0 ? projects.reduce((acc, p) => acc + p.progress, 0) / projects.length : 0}%
+              {projects.length > 0
+                ? (projects.reduce((acc, p) => acc + p.progress, 0) / projects.length).toFixed(2)
+                : '0.00'}%
             </p>
             <p className="text-sm text-slate-400">平均进度</p>
           </div>
@@ -207,9 +225,21 @@ export function Projects() {
                   <GlassCard variant="paper" className="p-5 flex flex-col gap-4">
                     <div className="flex justify-between items-start">
                       <h3 className="text-lg font-medium text-white">{project.name}</h3>
-                      <div className="bg-slate-700/50 px-2.5 py-1 rounded-lg text-xs text-slate-400 border border-slate-600/30 flex items-center gap-1 shrink-0">
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => setDeleteConfirmId(project.id)}
+                          aria-label={`删除 ${project.name}`}
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="bg-slate-700/50 px-2.5 py-1 rounded-lg text-xs text-slate-400 border border-slate-600/30 flex items-center gap-1">
                         <Calendar size={10} />
-                        {project.endDate} 截止
+                        {project.startDate} → {project.endDate}
                       </div>
                     </div>
 
@@ -227,31 +257,41 @@ export function Projects() {
                         />
                       </div>
                       <p className="text-xs text-slate-500">
-                          {project.startDate} 至 {project.endDate} · 已打卡 {project.checkIns.length} 天
+                          已打卡 {project.checkIns.length} 天 · {project.checkIns.length > 0 ? `最近: ${project.checkIns[project.checkIns.length - 1]}` : '暂无打卡'}
                       </p>
                     </div>
                     
-                    <button
-                        onClick={() => checkInProject(project.id)}
-                        disabled={checkedToday || !available}
-                        aria-label={checkedToday ? "今日已打卡" : available ? "打卡" : "不在日期范围内"}
-                        className={cn(
-                            "w-full py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors font-medium text-sm",
-                            checkedToday
-                                ? "bg-green-600/20 text-green-400 border border-green-500/30 cursor-default"
-                                : !available
-                                  ? "bg-slate-700/30 text-slate-600 cursor-not-allowed"
-                                  : "bg-purple-600 hover:bg-purple-500 text-white"
-                        )}
-                    >
-                        {checkedToday ? (
-                            <><CheckCircle size={16} /> 今日已打卡</>
-                        ) : !available ? (
-                            <><Calendar size={16} /> 未到项目日期</>
-                        ) : (
-                            <><CheckCircle size={16} /> 今日打卡</>
-                        )}
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                          onClick={() => checkInProject(project.id)}
+                          disabled={checkedToday || !available}
+                          aria-label={checkedToday ? "今日已打卡" : available ? "打卡" : "不在日期范围内"}
+                          className={cn(
+                              "flex-1 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors font-medium text-sm",
+                              checkedToday
+                                  ? "bg-green-600/20 text-green-400 border border-green-500/30 cursor-default"
+                                  : !available
+                                    ? "bg-slate-700/30 text-slate-600 cursor-not-allowed"
+                                    : "bg-purple-600 hover:bg-purple-500 text-white"
+                          )}
+                      >
+                          {checkedToday ? (
+                              <><CheckCircle size={16} /> 今日已打卡</>
+                          ) : !available ? (
+                              <><Calendar size={16} /> 未到项目日期</>
+                          ) : (
+                              <><CheckCircle size={16} /> 今日打卡</>
+                          )}
+                      </button>
+                      <button
+                        onClick={() => setCustomCheckinId(project.id)}
+                        className="px-3 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors text-sm"
+                        aria-label="选择其他日期打卡"
+                        title="选择其他日期打卡"
+                      >
+                        <Clock size={16} />
+                      </button>
+                    </div>
                   </GlassCard>
                 </motion.div>
               );
@@ -268,6 +308,98 @@ export function Projects() {
             </motion.div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteConfirmId !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => setDeleteConfirmId(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-medium text-white mb-2">确认删除</h3>
+              <p className="text-sm text-slate-400 mb-6">
+                删除后所有打卡记录将丢失，此操作不可撤销。
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setDeleteConfirmId(null)}
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={() => { deleteProject(deleteConfirmId); setDeleteConfirmId(null); }}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  确认删除
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Check-in Date Modal */}
+      <AnimatePresence>
+        {customCheckinId !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => { setCustomCheckinId(null); setCustomDate(""); }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-medium text-white mb-2 flex items-center gap-2">
+                <Calendar size={18} className="text-purple-400" />
+                选择打卡日期
+              </h3>
+              <p className="text-sm text-slate-400 mb-4">
+                选择项目的起止日期内的任意一天进行打卡。
+              </p>
+              <input
+                type="date"
+                value={customDate}
+                onChange={(e) => setCustomDate(e.target.value)}
+                className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-white mb-6 focus:outline-none focus:border-purple-500"
+                min={projects.find(p => p.id === customCheckinId)?.startDate}
+                max={new Date().toISOString().split('T')[0]}
+              />
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => { setCustomCheckinId(null); setCustomDate(""); }}
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={() => handleCustomCheckin(customCheckinId)}
+                  disabled={!customDate}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  确认打卡
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

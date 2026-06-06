@@ -70,10 +70,10 @@ interface DataContextType {
   addTodo: (text: string, urgent: boolean, dueDate?: string) => void;
   toggleTodo: (id: number) => void;
   deleteTodo: (id: number) => void;
-  
   projects: Project[];
   addProject: (project: Omit<Project, 'id' | 'progress' | 'checkIns'>) => void;
-  checkInProject: (id: number) => void;
+  deleteProject: (id: number) => void;
+  checkInProject: (id: number, date?: string) => void;
   canCheckInToday: (projectId: number) => boolean;
   
   events: CalendarEvent[];
@@ -202,17 +202,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setProjects(prev => [...prev, { ...project, id: Date.now(), progress: 0, checkIns: [] }]);
   }, []);
 
-  const checkInProject = useCallback((id: number) => {
-    const today = new Date().toISOString().split('T')[0];
+  const deleteProject = useCallback((id: number) => {
+    setProjects(prev => prev.filter(p => p.id !== id));
+  }, []);
+
+  const checkInProject = useCallback((id: number, date?: string) => {
+    const checkDate = date || new Date().toISOString().split('T')[0];
     setProjects(prev => prev.map(p => {
-      if (p.id !== id || p.checkIns.includes(today)) return p;
-      if (today < p.startDate || today > p.endDate) return p;
-      const newCheckIns = [...p.checkIns, today];
-      const start = new Date(p.startDate);
-      const end = new Date(p.endDate);
-      const totalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)) || 1;
-      const newProgress = Math.min(Math.round((newCheckIns.length / totalDays) * 10000) / 100, 100);
-      return { ...p, checkIns: newCheckIns, progress: newProgress };
+      if (p.id !== id || p.checkIns.includes(checkDate)) return p;
+      if (checkDate < p.startDate || checkDate > p.endDate) return p;
+      const newCheckIns = [...p.checkIns, checkDate].sort();
+      const totalDays = Math.max(1, Math.round((new Date(p.endDate).getTime() - new Date(p.startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1);
+      return { ...p, checkIns: newCheckIns, progress: Math.round((newCheckIns.length / totalDays) * 10000) / 100 };
     }));
   }, []);
 
@@ -425,7 +426,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   return (
     <DataContext.Provider value={{
       todos, addTodo, toggleTodo, deleteTodo,
-      projects, addProject, checkInProject, canCheckInToday,
+      projects, addProject, deleteProject, checkInProject, canCheckInToday,
       events: manualEvents, allEvents, addEvent, updateEvent, deleteEvent,
       habits, toggleHabit, addHabit, deleteHabit,
       timeline, addTimelineEntry, deleteTimelineEntry,

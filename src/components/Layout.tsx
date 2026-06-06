@@ -27,7 +27,7 @@ export function Layout({ children, currentView, onChangeView }: LayoutProps) {
   const fontClass = FONT_SIZES[settings.fontSizeMode] || FONT_SIZES.medium;
 
   return (
-    <div className={`flex h-screen w-full overflow-hidden ${fontClass} relative bg-slate-900`}>
+    <div className={`flex h-screen w-full overflow-hidden ${fontClass} relative`}>
       <Sidebar currentView={currentView} onChangeView={onChangeView} />
       
       <main className={`flex-1 h-full overflow-y-auto overflow-x-hidden relative z-10 ${densityPadding} scroll-smooth`}>
